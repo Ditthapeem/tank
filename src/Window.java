@@ -47,7 +47,7 @@ public class Window extends JFrame {
             paintBush(g);
             paintBrick(g);
             paintSteel(g);
-            paintTank(g);
+//            paintTank(g);
 //            paintEnemyTank(g);
         }
 

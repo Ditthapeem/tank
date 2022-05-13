@@ -13,6 +13,7 @@ public class MapDefault implements Map {
         addObjectListMap();
     }
 
+    @Override
     public void addObjectListMap() {
         addListMapBush();
         addListMapBrick();
@@ -20,10 +21,12 @@ public class MapDefault implements Map {
         addListMapMyTank();
     }
 
+    @Override
     public void addListMapMyTank(){
         listMapMyTank = Arrays.asList( Arrays.asList(1, 1));
     }
 
+    @Override
     public void addListMapBush() {
         listMapBush  = Arrays.asList(   Arrays.asList(3, 1),
                                         Arrays.asList(2, 2),
@@ -65,6 +68,7 @@ public class MapDefault implements Map {
                                         Arrays.asList(11, 12));
     }
 
+    @Override
     public void addListMapBrick() {
         listMapBrick = Arrays.asList(   Arrays.asList(5, 1),
                                         Arrays.asList(10, 1),
@@ -100,6 +104,7 @@ public class MapDefault implements Map {
                                         Arrays.asList(9, 10));
     }
 
+    @Override
     public void addListMapSteel() {
         listMapSteel = Arrays.asList(   Arrays.asList(4, 1),
                                         Arrays.asList(6, 1),
@@ -122,18 +127,22 @@ public class MapDefault implements Map {
                                         Arrays.asList(12, 2));
     }
 
+    @Override
     public List<List<Integer>> getListMapBrick() {
         return listMapBrick;
     }
 
+    @Override
     public List<List<Integer>> getListMapSteel() {
         return listMapSteel;
     }
 
+    @Override
     public List<List<Integer>> getListMapBush() {
         return listMapBush;
     }
 
+    @Override
     public List<List<Integer>> getListMapMyTank() {
         return listMapMyTank;
     }
