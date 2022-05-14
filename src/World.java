@@ -11,8 +11,10 @@ public class World {
 
     private List<Bush> bushList;
     private List<Brick> brickList;
+    private List<Brick> brickToRemove;
     private List<Steel> steelList;
-
+    private List<Bullet> bulletList;
+    private List<Bullet> bulletToRemove;
     private boolean isStart;
     private boolean isOver;
 
@@ -23,6 +25,9 @@ public class World {
         bushList = new ArrayList<Bush>();
         brickList = new ArrayList<Brick>();
         steelList = new ArrayList<Steel>();
+        bulletList = new ArrayList<Bullet>();
+        bulletToRemove = new ArrayList<Bullet>();
+        brickToRemove = new ArrayList<Brick>();
         addObjectList();
     }
 
@@ -61,6 +66,13 @@ public class World {
         }
     }
 
+    public void addBullet(Tank srcTank) {
+        Bullet newBullet = new Bullet(srcTank.getX() + srcTank.getdX(), srcTank.getY() + srcTank.getdY());
+        newBullet.setdX(srcTank.getdX());
+        newBullet.setdY(srcTank.getdY());
+        bulletList.add(newBullet);
+    }
+
     public void moveFirstTank() {
         if (canMove(tank)) {
             tank.move();
@@ -90,7 +102,25 @@ public class World {
     }
 
     public void move() {
-
+        bulletToRemove.clear();
+        for (Bullet bullet: bulletList) {
+            bullet.move();
+            if (!isInBoundary(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+            } else if (isInSteel(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+            } else if (isInBrick(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+                brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
+                                    .findFirst().orElse(null));
+            }
+        }
+        for (Bullet bullet: bulletToRemove) {
+            bulletList.remove(bullet);
+        }
+        for (Brick brick: brickToRemove) {
+            brickList.remove(brick);
+        }
     }
 
     public List<Bush> getBushList() {
@@ -103,6 +133,10 @@ public class World {
 
     public List<Steel> getSteelList() {
         return steelList;
+    }
+
+    public List<Bullet> getBulletList() {
+        return bulletList;
     }
 
     public Tank getTank() {

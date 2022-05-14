@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.util.List;
 
 public class Window extends JFrame {
@@ -24,10 +26,11 @@ public class Window extends JFrame {
                     gridUI.repaint();
                     moving();
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(180);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
                 }
             }
         };
@@ -59,6 +62,7 @@ public class Window extends JFrame {
         private Image imageBrick;
         private Image imageBush;
         private Image imageSteel;
+        private Image imageBullet;
         public GridUI() {
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
                     worldSize * CELL_PIXEL_SIZE));
@@ -66,6 +70,7 @@ public class Window extends JFrame {
             imageBush = new ImageIcon("img/bush.png").getImage();
             imageBrick = new ImageIcon("img/brick.png").getImage();
             imageSteel = new ImageIcon("img/steel.png").getImage();
+            imageBullet = new ImageIcon("img/bullet.png").getImage();
             showTank = true;
         }
 
@@ -75,6 +80,7 @@ public class Window extends JFrame {
             paintBush(g);
             paintBrick(g);
             paintSteel(g);
+            paintBullet(g);
             if (showTank) {
                 paintTank(g);
             }
@@ -118,9 +124,16 @@ public class Window extends JFrame {
                 int y = s.getY() * CELL_PIXEL_SIZE;
                 g.drawImage(imageSteel, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
             }
-
         }
 
+        public void paintBullet(Graphics g) {
+            List<Bullet> bulletList = world.getBulletList();
+            for (Bullet bullet: bulletList) {
+                int x = bullet.getX() * CELL_PIXEL_SIZE;
+                int y = bullet.getY() * CELL_PIXEL_SIZE;
+                g.drawImage(imageBullet, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+            }
+        }
         public void setShowTank(boolean status) {
             showTank = status;
         }
@@ -145,7 +158,9 @@ public class Window extends JFrame {
                 Command c = new CommandMoveRight(world.getTank());
                 c.execute();
                 world.moveFirstTank();
-            } else {
+            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                world.addBullet(world.getTank());
+            }else {
                 // Don't allow starting when press key except direction key
                 return;
             }
