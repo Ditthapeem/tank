@@ -1,26 +1,45 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class Window extends JFrame {
 
     private World world;
     private int worldSize = 12;
-    private GridUI gridUI;
+    private GameUI gameUI;
+    private PregameUI pregameUI;
+
+    public boolean gameStart = false;
 
     public Window() {
         world = new World(worldSize);
-        gridUI = new GridUI();
-        add(gridUI);
-        pack();
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
-    public void start() {
-        setVisible(true);
+    public void initPregame() {
+        pregameUI = new PregameUI();
+        add(pregameUI, BorderLayout.SOUTH);
+        pack();
     }
 
-    class GridUI extends JPanel {
+    public void initGame() {
+        gameUI = new GameUI();
+        add(gameUI, BorderLayout.CENTER);
+        pack();
+    }
+
+    public void start() {
+        initPregame();
+        while (!gameStart) {
+            initGame();
+        }
+
+    }
+
+    class GameUI extends JPanel {
         public static final int CELL_PIXEL_SIZE = 50;
 
         private List<Bush> bushList;
@@ -32,7 +51,9 @@ public class Window extends JFrame {
         private Image imageBush;
         private Image imageSteel;
 
-        public GridUI() {
+        public GameUI() {
+            setDoubleBuffered(true);
+
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
                     worldSize * CELL_PIXEL_SIZE));
             imageTank = new ImageIcon("img/tank.png").getImage();
@@ -92,8 +113,57 @@ public class Window extends JFrame {
         }
     }
 
+    class PregameUI extends JPanel {
+
+        private JButton map1;
+        private JButton map2;
+        private JLabel mapString;
+
+        public PregameUI() {
+            setLayout(new FlowLayout());
+            setButton();
+        }
+
+        private void setButton() {
+            map1Button();
+            map2Button();
+        }
+
+        private void map1Button() {
+            map1 = new JButton("map1");
+            map1.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+//                    world.start();
+                    world.setMap(1);
+                    map2.setEnabled(false);
+                    gameStart = true;
+                    Window.this.requestFocus();
+                }
+            });
+            add(map1);
+        }
+
+        private void map2Button() {
+            map2 = new JButton("map2");
+            map2.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+//                    world.start();
+                    world.setMap(2);
+                    map1.setEnabled(false);
+                    gameStart = true;
+                    Window.this.requestFocus();
+                }
+            });
+            add(map2);
+        }
+
+    }
+
     public static void main(String[] args) {
         Window window = new Window();
+        window.setVisible(true);
         window.start();
     }
 
