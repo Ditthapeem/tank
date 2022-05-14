@@ -8,6 +8,8 @@ public class Window extends JFrame {
 
     private final World world;
     private final int worldSize = 12;
+    private GameUI gameUI;
+    private PregameUI pregameUI;
 
     public boolean gameStart = false;
 
@@ -18,14 +20,24 @@ public class Window extends JFrame {
     }
 
     public void initPregame() {
-        PregameUI pregameUI = new PregameUI();
+        pregameUI = new PregameUI();
         add(pregameUI, BorderLayout.SOUTH);
         pack();
     }
 
+    public void deleteInitPregame() {
+        remove(pregameUI);
+        pack();
+    }
+
     public void initGame() {
-        GameUI gameUI = new GameUI();
+        gameUI = new GameUI();
         add(gameUI, BorderLayout.CENTER);
+        pack();
+    }
+
+    public void deleteInitGame() {
+        remove(gameUI);
         pack();
     }
 
@@ -34,6 +46,7 @@ public class Window extends JFrame {
         while (!gameStart) {
             initGame();
         }
+        deleteInitPregame();
 
     }
 
