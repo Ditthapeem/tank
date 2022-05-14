@@ -35,6 +35,7 @@ public class MapTomb implements Map {
                                         Arrays.asList(3, 7),
                                         Arrays.asList(3, 8),
                                         Arrays.asList(3, 9),
+                                        Arrays.asList(3, 10),
                                         Arrays.asList(3, 11),
                                         Arrays.asList(3, 12),
                                         Arrays.asList(5, 1),
