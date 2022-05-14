@@ -42,6 +42,7 @@ public class Window extends JFrame {
     }
 
     public void start() {
+        setVisible(true);
         initPregame();
         while (!gameStart) {
             initGame();
@@ -128,6 +129,7 @@ public class Window extends JFrame {
 
         private JButton map1;
         private JButton map2;
+        private JButton map3;
         private JLabel mapString;
 
         public PregameUI() {
@@ -138,16 +140,15 @@ public class Window extends JFrame {
         private void setButton() {
             map1Button();
             map2Button();
+            map3Button();
         }
 
         private void map1Button() {
-            map1 = new JButton("map1");
+            map1 = new JButton("Map 1");
             map1.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    world.start();
-                    world.setMap(1);
-                    map2.setEnabled(false);
+                    world.setMapDefault();
                     gameStart = true;
                     Window.this.requestFocus();
                 }
@@ -156,13 +157,11 @@ public class Window extends JFrame {
         }
 
         private void map2Button() {
-            map2 = new JButton("map2");
+            map2 = new JButton("Map 2");
             map2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    world.start();
-                    world.setMap(2);
-                    map1.setEnabled(false);
+                    world.setMapTomb();
                     gameStart = true;
                     Window.this.requestFocus();
                 }
@@ -170,11 +169,23 @@ public class Window extends JFrame {
             add(map2);
         }
 
+        private void map3Button() {
+            map3 = new JButton("Map 3");
+            map3.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    world.setMapSpecial();
+                    gameStart = true;
+                    Window.this.requestFocus();
+                }
+            });
+            add(map3);
+        }
+
     }
 
     public static void main(String[] args) {
         Window window = new Window();
-        window.setVisible(true);
         window.start();
     }
 

@@ -27,14 +27,19 @@ public class World {
         addMyTank();
     }
 
-    public void setMap(int x) {
-        if (x == 1) {
-            this.map = new MapDefault();
-            addObjectList();
-        } else if(x == 2) {
-            this.map = new MapTomb();
-            addObjectList();
-        }
+    public void setMapDefault() {
+        this.map = new MapDefault();
+        addObjectList();
+    }
+
+    public void setMapTomb() {
+        this.map = new MapTomb();
+        addObjectList();
+    }
+
+    public void setMapSpecial() {
+        this.map = new MapSpecial();
+        addObjectList();
     }
 
     private void addBushList() {
