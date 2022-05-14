@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
 public class Window extends JFrame {
@@ -7,13 +9,38 @@ public class Window extends JFrame {
     private World world;
     private int worldSize = 12;
     private GridUI gridUI;
+    private Thread thread;
+    private Controller controller;
 
     public Window() {
+        controller = new Controller();
+        addKeyListener(controller);
         world = new World(worldSize);
         gridUI = new GridUI();
+        thread = new Thread() {
+            @Override
+            public void run() {
+                while (!world.getIsOver()) {
+                    gridUI.repaint();
+                    moving();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
         add(gridUI);
         pack();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    private void moving() {
+        if (world.getIsStart()) {
+            world.move();
+        }
     }
 
     public void start() {
@@ -28,10 +55,10 @@ public class Window extends JFrame {
         private List<Steel> steelList;
 
         private Image imageTank;
+        private boolean showTank;
         private Image imageBrick;
         private Image imageBush;
         private Image imageSteel;
-
         public GridUI() {
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
                     worldSize * CELL_PIXEL_SIZE));
@@ -39,6 +66,7 @@ public class Window extends JFrame {
             imageBush = new ImageIcon("img/bush.png").getImage();
             imageBrick = new ImageIcon("img/brick.png").getImage();
             imageSteel = new ImageIcon("img/steel.png").getImage();
+            showTank = true;
         }
 
         @Override
@@ -47,7 +75,9 @@ public class Window extends JFrame {
             paintBush(g);
             paintBrick(g);
             paintSteel(g);
-            paintTank(g);
+            if (showTank) {
+                paintTank(g);
+            }
 //            paintEnemyTank(g);
         }
 
@@ -89,6 +119,45 @@ public class Window extends JFrame {
                 g.drawImage(imageSteel, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
             }
 
+        }
+
+        public void setShowTank(boolean status) {
+            showTank = status;
+        }
+    }
+
+    class Controller extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_UP) {
+                Command c = new CommandMoveUp(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+                Command c = new CommandMoveDown(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+                Command c = new CommandMoveLeft(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                Command c = new CommandMoveRight(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else {
+                // Don't allow starting when press key except direction key
+                return;
+            }
+            if (world.isInBush(
+                    world.getTank().getX(),
+                    world.getTank().getY())) {
+                gridUI.setShowTank(false);
+            } else {
+                gridUI.setShowTank(true);
+            }
+            gridUI.repaint();
+            world.setIsStart(true);
         }
     }
 
