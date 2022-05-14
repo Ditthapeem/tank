@@ -104,7 +104,6 @@ public class World {
     public void move() {
         bulletToRemove.clear();
         for (Bullet bullet: bulletList) {
-            bullet.move();
             if (!isInBoundary(bullet.getX(), bullet.getY())) {
                 bulletToRemove.add(bullet);
             } else if (isInSteel(bullet.getX(), bullet.getY())) {
@@ -113,6 +112,8 @@ public class World {
                 bulletToRemove.add(bullet);
                 brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
                                     .findFirst().orElse(null));
+            } else {
+                bullet.move();
             }
         }
         for (Bullet bullet: bulletToRemove) {
