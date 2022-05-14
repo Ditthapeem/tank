@@ -13,9 +13,13 @@ public class World {
     private List<Brick> brickList;
     private List<Steel> steelList;
 
+    private boolean isStart;
+    private boolean isOver;
+
     public World(int size) {
         this.size = size;
         this.mapDefault = new MapDefault();
+        isOver = false;
         bushList = new ArrayList<Bush>();
         brickList = new ArrayList<Brick>();
         steelList = new ArrayList<Steel>();
@@ -57,6 +61,38 @@ public class World {
         }
     }
 
+    public void moveFirstTank() {
+        if (canMove(tank)) {
+            tank.move();
+        }
+    }
+
+    public boolean canMove(WObject obj) {
+        int newX = obj.getX() + obj.getdX();
+        int newY = obj.getY() + obj.getdY();
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY);
+    }
+
+    public boolean isInBush(int x, int y) {
+        return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
+    }
+
+    public boolean isInSteel(int x, int y) {
+        return steelList.stream().anyMatch(steel -> steel.getX() == x && steel.getY() == y);
+    }
+
+    public boolean isInBrick(int x, int y) {
+        return brickList.stream().anyMatch(brick -> brick.getX() == x && brick.getY() == y);
+    }
+
+    public boolean isInBoundary(int x, int y) {
+        return 0 <= x && x < size && 0 <= y && y < size;
+    }
+
+    public void move() {
+
+    }
+
     public List<Bush> getBushList() {
         return bushList;
     }
@@ -71,5 +107,21 @@ public class World {
 
     public Tank getTank() {
         return tank;
+    }
+
+    public boolean getIsStart() {
+        return isStart;
+    }
+
+    public boolean getIsOver() {
+        return isOver;
+    }
+
+    public void setIsStart(boolean status) {
+        isStart = status;
+    }
+
+    public int getSize() {
+        return size;
     }
 }
