@@ -6,10 +6,8 @@ import java.util.List;
 
 public class Window extends JFrame {
 
-    private World world;
-    private int worldSize = 12;
-    private GameUI gameUI;
-    private PregameUI pregameUI;
+    private final World world;
+    private final int worldSize = 12;
 
     public boolean gameStart = false;
 
@@ -20,13 +18,13 @@ public class Window extends JFrame {
     }
 
     public void initPregame() {
-        pregameUI = new PregameUI();
+        PregameUI pregameUI = new PregameUI();
         add(pregameUI, BorderLayout.SOUTH);
         pack();
     }
 
     public void initGame() {
-        gameUI = new GameUI();
+        GameUI gameUI = new GameUI();
         add(gameUI, BorderLayout.CENTER);
         pack();
     }
@@ -46,10 +44,10 @@ public class Window extends JFrame {
         private List<Brick> brickList;
         private List<Steel> steelList;
 
-        private Image imageTank;
-        private Image imageBrick;
-        private Image imageBush;
-        private Image imageSteel;
+        private final Image imageTank;
+        private final Image imageBrick;
+        private final Image imageBush;
+        private final Image imageSteel;
 
         public GameUI() {
             setDoubleBuffered(true);
