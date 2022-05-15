@@ -62,6 +62,7 @@ public class Window extends JFrame {
         private final Image imageBrick;
         private final Image imageBush;
         private final Image imageSteel;
+        private final Image imageLogo;
 
         public GameUI() {
             setDoubleBuffered(true);
@@ -72,16 +73,24 @@ public class Window extends JFrame {
             imageBush = new ImageIcon("img/bush.png").getImage();
             imageBrick = new ImageIcon("img/brick.png").getImage();
             imageSteel = new ImageIcon("img/steel.png").getImage();
+            imageLogo = new ImageIcon("img/logo.png").getImage();
         }
 
         @Override
         public void paint(Graphics g) {
             super.paint(g);
+            if (!gameStart) {
+                paintLogo(g);
+            }
             paintBush(g);
             paintBrick(g);
             paintSteel(g);
 //            paintTank(g);
 //            paintEnemyTank(g);
+        }
+
+        public void paintLogo(Graphics g) {
+            g.drawImage(imageLogo, 0, 0, worldSize * CELL_PIXEL_SIZE, worldSize * CELL_PIXEL_SIZE, null, null);
         }
 
         public void paintTank(Graphics g) {
