@@ -14,16 +14,29 @@ public class World {
 
     private List<Bush> bushList;
     private List<Brick> brickList;
+    private List<Brick> brickToRemove;
     private List<Steel> steelList;
+    private List<Bullet> bulletList;
+    private List<Bullet> bulletToRemove;
+    private boolean isStart;
+    private boolean isOver;
 
     public World(int size) {
         this.size = size;
         bushList = new ArrayList<Bush>();
         brickList = new ArrayList<Brick>();
         steelList = new ArrayList<Steel>();
+        isOver = false;
+        bushList = new ArrayList<Bush>();
+        brickList = new ArrayList<Brick>();
+        steelList = new ArrayList<Steel>();
+        bulletList = new ArrayList<Bullet>();
+        bulletToRemove = new ArrayList<Bullet>();
+        brickToRemove = new ArrayList<Brick>();
+//        addObjectList();
     }
 
-    private void addObjectList() {
+    public void addObjectList() {
         addBushList();
         addBrickList();
         addSteelList();
@@ -73,6 +86,64 @@ public class World {
         }
     }
 
+    public void addBullet(Tank srcTank) {
+        Bullet newBullet = new Bullet(srcTank.getX() + srcTank.getdX(), srcTank.getY() + srcTank.getdY());
+        newBullet.setdX(srcTank.getdX());
+        newBullet.setdY(srcTank.getdY());
+        bulletList.add(newBullet);
+    }
+
+    public void moveFirstTank() {
+        if (canMove(tank)) {
+            tank.move();
+        }
+    }
+
+    public boolean canMove(WObject obj) {
+        int newX = obj.getX() + obj.getdX();
+        int newY = obj.getY() + obj.getdY();
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY);
+    }
+
+    public boolean isInBush(int x, int y) {
+        return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
+    }
+
+    public boolean isInSteel(int x, int y) {
+        return steelList.stream().anyMatch(steel -> steel.getX() == x && steel.getY() == y);
+    }
+
+    public boolean isInBrick(int x, int y) {
+        return brickList.stream().anyMatch(brick -> brick.getX() == x && brick.getY() == y);
+    }
+
+    public boolean isInBoundary(int x, int y) {
+        return 0 <= x && x < size && 0 <= y && y < size;
+    }
+
+    public void move() {
+        bulletToRemove.clear();
+        for (Bullet bullet: bulletList) {
+            if (!isInBoundary(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+            } else if (isInSteel(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+            } else if (isInBrick(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+                brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
+                                    .findFirst().orElse(null));
+            } else {
+                bullet.move();
+            }
+        }
+        for (Bullet bullet: bulletToRemove) {
+            bulletList.remove(bullet);
+        }
+        for (Brick brick: brickToRemove) {
+            brickList.remove(brick);
+        }
+    }
+
     public List<Bush> getBushList() {
         return bushList;
     }
@@ -85,10 +156,14 @@ public class World {
         return steelList;
     }
 
+    public List<Bullet> getBulletList() {
+        return bulletList;
+    }
+
     public Tank getTank() {
         return tank;
     }
-
+    
     public int getPlayer1Score() {
         return player1Score;
     }
@@ -103,5 +178,21 @@ public class World {
 
     public void setPlayer2Score(int player2Score) {
         this.player2Score = player2Score;
+    }
+        
+    public boolean getIsStart() {
+        return isStart;
+    }
+
+    public boolean getIsOver() {
+        return isOver;
+    }
+
+    public void setIsStart(boolean status) {
+        isStart = status;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

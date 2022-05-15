@@ -59,7 +59,12 @@ public abstract class WObject {
     public int getdY() {
         return dy;
     }
-
+    public void setdX(int dx) {
+        this.dx = dx;
+    }
+    public void setdY(int dy) {
+        this.dy = dy;
+    }
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;

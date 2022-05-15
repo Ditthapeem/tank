@@ -1,10 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+
 import java.util.List;
 
 public class Window extends JFrame {
+
 
     private final World world;
     private final int worldSize = 12;
@@ -19,7 +27,13 @@ public class Window extends JFrame {
     public boolean soloMode = false;
     public boolean duoMode = false;
 
+    private Thread thread;
+    private Controller controller;
+
+
     public Window() {
+        controller = new Controller();
+        addKeyListener(controller);
         world = new World(worldSize);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -53,6 +67,35 @@ public class Window extends JFrame {
         pack();
     }
 
+    private void startGame() {
+        gameUI = new GameUI();
+        thread = new Thread() {
+            @Override
+            public void run() {
+                while (!world.getIsOver()) {
+
+                    moving();
+                    gameUI.repaint();
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+        thread.start();
+        add(gameUI);
+        pack();
+    }
+
+    private void moving() {
+        if (world.getIsStart()) {
+            world.move();
+        }
+    }
+
     public void start() {
         setVisible(true);
         initPregame();
@@ -64,6 +107,7 @@ public class Window extends JFrame {
         }
         deleteInitPregame();
         initInGame();
+        startGame();
     }
 
     class GameUI extends JPanel {
@@ -77,11 +121,12 @@ public class Window extends JFrame {
         private final Image imageBrick;
         private final Image imageBush;
         private final Image imageSteel;
+        private final Image imageBullet;
         private final Image imageLogo;
 
-        public GameUI() {
-            setDoubleBuffered(true);
+        private boolean showTank = false;
 
+        public GameUI() {
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
                     worldSize * CELL_PIXEL_SIZE));
             imageTank = new ImageIcon("img/tank.png").getImage();
@@ -89,6 +134,9 @@ public class Window extends JFrame {
             imageBrick = new ImageIcon("img/brick.png").getImage();
             imageSteel = new ImageIcon("img/steel.png").getImage();
             imageLogo = new ImageIcon("img/logo.png").getImage();
+
+            imageBullet = new ImageIcon("img/bullet.png").getImage();
+            showTank = true;
         }
 
         @Override
@@ -101,6 +149,10 @@ public class Window extends JFrame {
             paintBrick(g);
             paintSteel(g);
 //            paintTank(g);
+            paintBullet(g);
+            if (showTank) {
+                paintTank(g);
+            }
 //            paintEnemyTank(g);
         }
 
@@ -145,7 +197,57 @@ public class Window extends JFrame {
                 int y = s.getY() * CELL_PIXEL_SIZE;
                 g.drawImage(imageSteel, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
             }
+        }
 
+        public void paintBullet(Graphics g) {
+            List<Bullet> bulletList = world.getBulletList();
+            for (Bullet bullet: bulletList) {
+                int x = bullet.getX() * CELL_PIXEL_SIZE;
+                int y = bullet.getY() * CELL_PIXEL_SIZE;
+                if (!world.isInBush(bullet.getX(), bullet.getY())) {
+                    g.drawImage(imageBullet, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+                }
+            }
+        }
+        public void setShowTank(boolean status) {
+            showTank = status;
+        }
+    }
+
+    class Controller extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_UP) {
+                Command c = new CommandMoveUp(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+                Command c = new CommandMoveDown(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+                Command c = new CommandMoveLeft(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                Command c = new CommandMoveRight(world.getTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                world.addBullet(world.getTank());
+            }else {
+                // Don't allow starting when press key except direction key
+                return;
+            }
+            if (world.isInBush(
+                    world.getTank().getX(),
+                    world.getTank().getY())) {
+                gameUI.setShowTank(false);
+            } else {
+                gameUI.setShowTank(true);
+            }
+            gameUI.repaint();
+            world.setIsStart(true);
         }
     }
 
