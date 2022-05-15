@@ -8,10 +8,16 @@ public class Window extends JFrame {
 
     private final World world;
     private final int worldSize = 12;
-    private GameUI gameUI;
-    private PregameUI pregameUI;
 
-    public boolean gameStart = false;
+    private GameUI gameUI;
+    private PreGameUI preGameUI;
+    private InGameUI inGameUI;
+
+    public boolean selectMap = false;
+    public boolean selectMode = false;
+
+    public boolean soloMode = false;
+    public boolean duoMode = false;
 
     public Window() {
         world = new World(worldSize);
@@ -20,13 +26,13 @@ public class Window extends JFrame {
     }
 
     public void initPregame() {
-        pregameUI = new PregameUI();
-        add(pregameUI, BorderLayout.SOUTH);
+        preGameUI = new PreGameUI();
+        add(preGameUI, BorderLayout.SOUTH);
         pack();
     }
 
     public void deleteInitPregame() {
-        remove(pregameUI);
+        remove(preGameUI);
         pack();
     }
 
@@ -41,14 +47,23 @@ public class Window extends JFrame {
         pack();
     }
 
+    public void initInGame() {
+        inGameUI = new InGameUI();
+        add(inGameUI, BorderLayout.SOUTH);
+        pack();
+    }
+
     public void start() {
         setVisible(true);
         initPregame();
-        while (!gameStart) {
+        while (true) {
             initGame();
+            if(selectMap && selectMode) {
+                break;
+            }
         }
         deleteInitPregame();
-
+        initInGame();
     }
 
     class GameUI extends JPanel {
@@ -79,7 +94,7 @@ public class Window extends JFrame {
         @Override
         public void paint(Graphics g) {
             super.paint(g);
-            if (!gameStart) {
+            if (!selectMap) {
                 paintLogo(g);
             }
             paintBush(g);
@@ -134,15 +149,19 @@ public class Window extends JFrame {
         }
     }
 
-    class PregameUI extends JPanel {
+    class PreGameUI extends JPanel {
 
         private JButton map1;
         private JButton map2;
         private JButton map3;
-        private JLabel mapString;
+        private JButton solo;
+        private JButton duo;
 
-        public PregameUI() {
+        public PreGameUI() {
             setLayout(new FlowLayout());
+            JLabel preGameLabel = new JLabel("Super Tank Fury 2015   ");
+            add(preGameLabel);
+            pack();
             setButton();
         }
 
@@ -150,6 +169,8 @@ public class Window extends JFrame {
             map1Button();
             map2Button();
             map3Button();
+            soloButton();
+            duoButton();
         }
 
         private void map1Button() {
@@ -158,7 +179,9 @@ public class Window extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.setMapDefault();
-                    gameStart = true;
+                    selectMap = true;
+                    map2.setEnabled(false);
+                    map3.setEnabled(false);
                     Window.this.requestFocus();
                 }
             });
@@ -171,7 +194,9 @@ public class Window extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.setMapTomb();
-                    gameStart = true;
+                    selectMap = true;
+                    map1.setEnabled(false);
+                    map3.setEnabled(false);
                     Window.this.requestFocus();
                 }
             });
@@ -184,17 +209,91 @@ public class Window extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     world.setMapSpecial();
-                    gameStart = true;
+                    selectMap = true;
+                    map1.setEnabled(false);
+                    map2.setEnabled(false);
                     Window.this.requestFocus();
                 }
             });
             add(map3);
         }
 
+        private void soloButton() {
+            solo = new JButton("1 Player");
+            solo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectMode = true;
+                    duo.setEnabled(false);
+                    soloMode = true;
+                    Window.this.requestFocus();
+                }
+            });
+            add(solo);
+        }
+
+        private void duoButton() {
+            duo = new JButton("2 Players");
+            duo.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectMode = true;
+                    solo.setEnabled(false);
+                    duoMode = true;
+                    Window.this.requestFocus();
+                }
+            });
+            add(duo);
+        }
+
+    }
+
+    class InGameUI extends JPanel {
+        private JLabel soloHealth;
+        private JLabel duoHealth1;
+        private JLabel duoHealth2;
+
+        public InGameUI() {
+            setDoubleBuffered(true);
+            setPreferredSize(new Dimension(50 * worldSize, 50));
+            repaint();
+        }
+
+        public void setPlayerLabel() {
+            if (soloMode) {
+                soloHealth = new JLabel("Player: ");
+                add(soloHealth);
+            } else if (duoMode) {
+                duoHealth1 = new JLabel("Player1: ");
+                duoHealth2 = new JLabel("Player2: ");
+                add(duoHealth1);
+                add(duoHealth2);
+            }
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            if (soloMode) {
+                paintScoreSolo(g);
+            } else if (duoMode) {
+                paintScoreDuo(g);
+            }
+        }
+
+        public void paintScoreSolo(Graphics g) {
+            g.drawString("PlayerScore: " + world.getPlayer1Score(), 20, 20);
+        }
+
+        public void paintScoreDuo(Graphics g) {
+            g.drawString("Player1's Score: " + world.getPlayer1Score(), 20, 20);
+            g.drawString("Player2's Score: " + world.getPlayer2Score(), 20, 40);
+        }
     }
 
     public static void main(String[] args) {
         Window window = new Window();
+        window.setTitle("Super Tank Fury 2015");
         window.start();
     }
 

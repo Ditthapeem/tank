@@ -9,6 +9,9 @@ public class World {
     private Tank tank;
     private Tank enemyTank;
 
+    private int player1Score = 0;
+    private int player2Score = 0;
+
     private List<Bush> bushList;
     private List<Brick> brickList;
     private List<Steel> steelList;
@@ -84,5 +87,21 @@ public class World {
 
     public Tank getTank() {
         return tank;
+    }
+
+    public int getPlayer1Score() {
+        return player1Score;
+    }
+
+    public int getPlayer2Score() {
+        return player2Score;
+    }
+
+    public void setPlayer1Score(int player1Score) {
+        this.player1Score = player1Score;
+    }
+
+    public void setPlayer2Score(int player2Score) {
+        this.player2Score = player2Score;
     }
 }
