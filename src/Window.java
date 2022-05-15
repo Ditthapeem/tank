@@ -134,7 +134,6 @@ public class Window extends JFrame {
             imageBrick = new ImageIcon("img/brick.png").getImage();
             imageSteel = new ImageIcon("img/steel.png").getImage();
             imageLogo = new ImageIcon("img/logo.png").getImage();
-
             imageBullet = new ImageIcon("img/bullet.png").getImage();
             showTank = true;
         }
@@ -144,16 +143,17 @@ public class Window extends JFrame {
             super.paint(g);
             if (!selectMap) {
                 paintLogo(g);
-            }
-            paintBush(g);
-            paintBrick(g);
-            paintSteel(g);
+            }else {
+                paintBush(g);
+                paintBrick(g);
+                paintSteel(g);
 //            paintTank(g);
-            paintBullet(g);
-            if (showTank) {
-                paintTank(g);
-            }
+                paintBullet(g);
+                if (showTank) {
+                    paintTank(g);
+                }
 //            paintEnemyTank(g);
+            }
         }
 
         public void paintLogo(Graphics g) {

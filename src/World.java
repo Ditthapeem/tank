@@ -23,9 +23,6 @@ public class World {
 
     public World(int size) {
         this.size = size;
-        bushList = new ArrayList<Bush>();
-        brickList = new ArrayList<Brick>();
-        steelList = new ArrayList<Steel>();
         isOver = false;
         bushList = new ArrayList<Bush>();
         brickList = new ArrayList<Brick>();
@@ -33,7 +30,6 @@ public class World {
         bulletList = new ArrayList<Bullet>();
         bulletToRemove = new ArrayList<Bullet>();
         brickToRemove = new ArrayList<Brick>();
-//        addObjectList();
     }
 
     public void addObjectList() {
