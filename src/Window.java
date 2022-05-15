@@ -23,10 +23,11 @@ public class Window extends JFrame {
             @Override
             public void run() {
                 while (!world.getIsOver()) {
-                    gridUI.repaint();
+
                     moving();
+                    gridUI.repaint();
                     try {
-                        Thread.sleep(180);
+                        Thread.sleep(150);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -131,7 +132,9 @@ public class Window extends JFrame {
             for (Bullet bullet: bulletList) {
                 int x = bullet.getX() * CELL_PIXEL_SIZE;
                 int y = bullet.getY() * CELL_PIXEL_SIZE;
-                g.drawImage(imageBullet, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+                if (!world.isInBush(bullet.getX(), bullet.getY())) {
+                    g.drawImage(imageBullet, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+                }
             }
         }
         public void setShowTank(boolean status) {
