@@ -27,7 +27,7 @@ public class Window extends JFrame {
                     moving();
                     gridUI.repaint();
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(150);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
