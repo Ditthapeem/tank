@@ -23,7 +23,7 @@ public class MapSpecial implements Map {
 
     @Override
     public void addListMapMyTank() {
-
+        listMapMyTank = Arrays.asList( Arrays.asList(3, 1));
     }
 
     @Override
