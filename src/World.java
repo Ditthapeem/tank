@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class World {
 
     private Map map;
@@ -113,11 +115,14 @@ public class World {
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !tankExist(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
     }
 
-    public boolean tankExist(int x, int y) {
-        return firstTank.getX() == x && firstTank.getY() == y || secondTank.getX() == x && secondTank.getY() == y;
+    public boolean firstTankExist(int x, int y) {
+        return firstTank.getX() == x && firstTank.getY() == y;
+    }
+    public boolean secondTankExist(int x, int y) {
+        return secondTank.getX() == x && secondTank.getY() == y;
     }
     public boolean isInBush(int x, int y) {
         return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
@@ -146,8 +151,13 @@ public class World {
                 bulletToRemove.add(bullet);
                 brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
                                     .findFirst().orElse(null));
-            } else if (tankExist(bullet.getX(), bullet.getY())) {
+            } else if (firstTankExist(bullet.getX(), bullet.getY())) {
                 bulletToRemove.add(bullet);
+                showMessageDialog(null, "Game Over. Player 2 wins.");
+            } else if (secondTankExist(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+                showMessageDialog(null, "Game Over. Player 1 wins.");
+
             } else {
                 bullet.move();
             }
