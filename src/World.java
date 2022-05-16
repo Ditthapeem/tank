@@ -112,10 +112,10 @@ public class World {
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !cellOccupied(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !tankExist(newX, newY);
     }
 
-    public boolean cellOccupied(int x, int y) {
+    public boolean tankExist(int x, int y) {
         return firstTank.getX() == x && firstTank.getY() == y || secondTank.getX() == x && secondTank.getY() == y;
     }
     public boolean isInBush(int x, int y) {
@@ -145,6 +145,8 @@ public class World {
                 bulletToRemove.add(bullet);
                 brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
                                     .findFirst().orElse(null));
+            } else if (tankExist(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
             } else {
                 bullet.move();
             }
