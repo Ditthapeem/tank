@@ -7,7 +7,9 @@ public class MapSpecial implements Map {
     public List<List<Integer>> listMapSteel = Arrays.asList();
     public List<List<Integer>> listMapBush = Arrays.asList();
 
-    public List<List<Integer>> listMapMyTank = Arrays.asList();
+    public List<List<Integer>> listMapFirstTank = Arrays.asList();
+
+    public List<List<Integer>> listMapSecondTank = Arrays.asList();
 
     public MapSpecial() {
         addObjectListMap();
@@ -18,12 +20,18 @@ public class MapSpecial implements Map {
         addListMapBush();
         addListMapBrick();
         addListMapSteel();
-        addListMapMyTank();
+        addListMapFirstTank();
+        addListMapSecondTank();
     }
 
     @Override
-    public void addListMapMyTank() {
-        listMapMyTank = Arrays.asList( Arrays.asList(3, 1));
+    public void addListMapFirstTank() {
+        listMapFirstTank = Arrays.asList( Arrays.asList(3, 1));
+    }
+
+    @Override
+    public void addListMapSecondTank() {
+        listMapSecondTank = Arrays.asList(Arrays.asList(12, 5));
     }
 
     @Override
@@ -118,7 +126,12 @@ public class MapSpecial implements Map {
     }
 
     @Override
-    public List<List<Integer>> getListMapMyTank() {
-        return listMapMyTank;
+    public List<List<Integer>> getListMapFirstTank() {
+        return listMapFirstTank;
+    }
+
+    @Override
+    public List<List<Integer>> getListMapSecondTank() {
+        return listMapSecondTank;
     }
 }

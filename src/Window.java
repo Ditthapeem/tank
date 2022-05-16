@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 
 import java.util.List;
 
@@ -33,7 +31,6 @@ public class Window extends JFrame {
 
     public Window() {
         controller = new Controller();
-        addKeyListener(controller);
         world = new World(worldSize);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -69,6 +66,7 @@ public class Window extends JFrame {
 
     private void startGame() {
         gameUI = new GameUI();
+        addKeyListener(controller);
         thread = new Thread() {
             @Override
             public void run() {
@@ -124,7 +122,8 @@ public class Window extends JFrame {
         private final Image imageBullet;
         private final Image imageLogo;
 
-        private boolean showTank = false;
+        private boolean showFirstTank;
+        private boolean showSecondTank;
 
         public GameUI() {
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
@@ -135,7 +134,8 @@ public class Window extends JFrame {
             imageSteel = new ImageIcon("img/steel.png").getImage();
             imageLogo = new ImageIcon("img/logo.png").getImage();
             imageBullet = new ImageIcon("img/bullet.png").getImage();
-            showTank = true;
+            showFirstTank = true;
+            showSecondTank = true;
         }
 
         @Override
@@ -147,12 +147,13 @@ public class Window extends JFrame {
                 paintBush(g);
                 paintBrick(g);
                 paintSteel(g);
-//            paintTank(g);
                 paintBullet(g);
-                if (showTank) {
-                    paintTank(g);
+                if (showFirstTank) {
+                    paintFirstTank(g);
                 }
-//            paintEnemyTank(g);
+                if (showSecondTank) {
+                    paintSecondTank(g);
+                }
             }
         }
 
@@ -160,15 +161,18 @@ public class Window extends JFrame {
             g.drawImage(imageLogo, 0, 0, worldSize * CELL_PIXEL_SIZE, worldSize * CELL_PIXEL_SIZE, null, null);
         }
 
-        public void paintTank(Graphics g) {
-            Tank tank = world.getTank();
+        public void paintFirstTank(Graphics g) {
+            Tank tank = world.getFirstTank();
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
             g.drawImage(imageTank, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
         }
 
-        public void paintEnemyTank(Graphics g) {
-            g.drawImage(imageTank, 11 * CELL_PIXEL_SIZE, 11 * CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+        public void paintSecondTank(Graphics g) {
+            Tank tank = world.getSecondTank();
+            int x = tank.getX() * CELL_PIXEL_SIZE;
+            int y = tank.getY()  * CELL_PIXEL_SIZE;
+            g.drawImage(imageTank, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
         }
 
         public void paintBush(Graphics g) {
@@ -209,8 +213,12 @@ public class Window extends JFrame {
                 }
             }
         }
-        public void setShowTank(boolean status) {
-            showTank = status;
+        public void setShowFirstTank(boolean status) {
+            showFirstTank = status;
+        }
+
+        public void setShowSecondTank(boolean status) {
+            showSecondTank = status;
         }
     }
 
@@ -218,34 +226,49 @@ public class Window extends JFrame {
         @Override
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_UP) {
-                Command c = new CommandMoveUp(world.getTank());
+                Command c = new CommandMoveUp(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
             } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-                Command c = new CommandMoveDown(world.getTank());
+                Command c = new CommandMoveDown(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
             } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-                Command c = new CommandMoveLeft(world.getTank());
+                Command c = new CommandMoveLeft(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
             } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                Command c = new CommandMoveRight(world.getTank());
+                Command c = new CommandMoveRight(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
             } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                world.addBullet(world.getTank());
-            }else {
+                world.addBullet(world.getFirstTank());
+            } else if(e.getKeyCode() == KeyEvent.VK_W) {
+                Command c = new CommandMoveUp(world.getSecondTank());
+                c.execute();
+                world.moveSecondTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_A) {
+                Command c = new CommandMoveLeft(world.getSecondTank());
+                c.execute();
+                world.moveSecondTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_S) {
+                Command c = new CommandMoveDown(world.getSecondTank());
+                c.execute();
+                world.moveSecondTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_D) {
+                Command c = new CommandMoveRight(world.getSecondTank());
+                c.execute();
+                world.moveSecondTank();
+            } else{
                 // Don't allow starting when press key except direction key
                 return;
             }
-            if (world.isInBush(
-                    world.getTank().getX(),
-                    world.getTank().getY())) {
-                gameUI.setShowTank(false);
-            } else {
-                gameUI.setShowTank(true);
-            }
+            gameUI.setShowFirstTank(!world.isInBush(
+                    world.getFirstTank().getX(),
+                    world.getFirstTank().getY()));
+            gameUI.setShowSecondTank(!world.isInBush(
+                    world.getSecondTank().getX(),
+                    world.getSecondTank().getY()));
             gameUI.repaint();
             world.setIsStart(true);
         }

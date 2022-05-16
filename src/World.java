@@ -6,8 +6,8 @@ public class World {
     private Map map;
     private int size;
 
-    private Tank tank;
-    private Tank enemyTank;
+    private Tank firstTank;
+    private Tank secondTank;
 
     private int player1Score = 0;
     private int player2Score = 0;
@@ -36,7 +36,8 @@ public class World {
         addBushList();
         addBrickList();
         addSteelList();
-        addMyTank();
+        addFirstTank();
+        addSecondTank();
     }
 
     public void setMapDefault() {
@@ -75,10 +76,17 @@ public class World {
         }
     }
 
-    private void addMyTank() {
-        List<List<Integer>> myTank = this.map.getListMapMyTank();
+    private void addFirstTank() {
+        List<List<Integer>> myTank = this.map.getListMapFirstTank();
         for (List<Integer> t: myTank) {
-            tank = new Tank(t.get(0)-1, t.get(1)-1);
+            firstTank = new Tank(t.get(0)-1, t.get(1)-1);
+        }
+    }
+
+    public void addSecondTank() {
+        List<List<Integer>> myTank = this.map.getListMapSecondTank();
+        for (List<Integer> t: myTank) {
+            secondTank = new Tank(t.get(0)-1, t.get(1)-1);
         }
     }
 
@@ -90,17 +98,26 @@ public class World {
     }
 
     public void moveFirstTank() {
-        if (canMove(tank)) {
-            tank.move();
+        if (canMove(firstTank)) {
+            firstTank.move();
+        }
+    }
+
+    public void moveSecondTank() {
+        if (canMove(secondTank)) {
+            secondTank.move();
         }
     }
 
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !cellOccupied(newX, newY);
     }
 
+    public boolean cellOccupied(int x, int y) {
+        return firstTank.getX() == x && firstTank.getY() == y || secondTank.getX() == x && secondTank.getY() == y;
+    }
     public boolean isInBush(int x, int y) {
         return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
     }
@@ -156,8 +173,12 @@ public class World {
         return bulletList;
     }
 
-    public Tank getTank() {
-        return tank;
+    public Tank getFirstTank() {
+        return firstTank;
+    }
+
+    public Tank getSecondTank() {
+        return secondTank;
     }
     
     public int getPlayer1Score() {
