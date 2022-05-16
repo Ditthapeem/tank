@@ -31,7 +31,7 @@ public class MapSpecial implements Map {
 
     @Override
     public void addListMapSecondTank() {
-        listMapSecondTank = Arrays.asList(Arrays.asList(12, 5));
+        listMapSecondTank = Arrays.asList(Arrays.asList(10, 12));
     }
 
     @Override
