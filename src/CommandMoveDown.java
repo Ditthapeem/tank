@@ -6,5 +6,6 @@ public class CommandMoveDown extends Command {
     @Override
     public void execute() {
         this.getTank().turnSouth();
+
     }
 }
