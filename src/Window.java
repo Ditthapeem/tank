@@ -225,40 +225,42 @@ public class Window extends JFrame {
     class Controller extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            if(e.getKeyCode() == KeyEvent.VK_UP) {
+            if(e.getKeyCode() == KeyEvent.VK_W) {
                 Command c = new CommandMoveUp(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-                Command c = new CommandMoveDown(world.getFirstTank());
-                c.execute();
-                world.moveFirstTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+            } else if(e.getKeyCode() == KeyEvent.VK_A) {
                 Command c = new CommandMoveLeft(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            } else if(e.getKeyCode() == KeyEvent.VK_S) {
+                Command c = new CommandMoveDown(world.getFirstTank());
+                c.execute();
+                world.moveFirstTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_D) {
                 Command c = new CommandMoveRight(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                world.addBullet(world.getFirstTank());
-            } else if(e.getKeyCode() == KeyEvent.VK_W) {
+            } else if(e.getKeyCode() == KeyEvent.VK_UP) {
                 Command c = new CommandMoveUp(world.getSecondTank());
                 c.execute();
                 world.moveSecondTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_A) {
-                Command c = new CommandMoveLeft(world.getSecondTank());
-                c.execute();
-                world.moveSecondTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_S) {
+            } else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
                 Command c = new CommandMoveDown(world.getSecondTank());
                 c.execute();
                 world.moveSecondTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_D) {
+            } else if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+                Command c = new CommandMoveLeft(world.getSecondTank());
+                c.execute();
+                world.moveSecondTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 Command c = new CommandMoveRight(world.getSecondTank());
                 c.execute();
                 world.moveSecondTank();
+            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                world.addBullet(world.getFirstTank());
+            } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                world.addBullet(world.getSecondTank());
             } else{
                 // Don't allow starting when press key except direction key
                 return;
