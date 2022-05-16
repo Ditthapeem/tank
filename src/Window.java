@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class Window extends JFrame {
@@ -18,6 +19,7 @@ public class Window extends JFrame {
     private GameUI gameUI;
     private PreGameUI preGameUI;
     private InGameUI inGameUI;
+    private WelcomeUI welcomeUI;
 
     public boolean selectMap = false;
     public boolean selectMode = false;
@@ -55,6 +57,12 @@ public class Window extends JFrame {
 
     public void deleteInitGame() {
         remove(gameUI);
+        pack();
+    }
+
+    public void initWelcome() {
+        WelcomeUI welcomeUI = new WelcomeUI();
+        add(welcomeUI, BorderLayout.CENTER);
         pack();
     }
 
@@ -97,15 +105,25 @@ public class Window extends JFrame {
     public void start() {
         setVisible(true);
         initPregame();
-        while (true) {
+        initWelcome();
+    }
+
+    public void mapSelected() {
+        if (selectMode) {
             initGame();
-            if(selectMap && selectMode) {
-                break;
-            }
+            deleteInitPregame();
+            initInGame();
+            startGame();
         }
-        deleteInitPregame();
-        initInGame();
-        startGame();
+    }
+
+    public void modeSelected() {
+        if (selectMap) {
+            initGame();
+            deleteInitPregame();
+            initInGame();
+            startGame();
+        }
     }
 
     class GameUI extends JPanel {
@@ -116,10 +134,14 @@ public class Window extends JFrame {
         private List<Steel> steelList;
 
         private final Image imageTank;
+        private BufferedImage firstTankOnScreen;
+        private BufferedImage secondTankOnScreen;
+        private BufferedImage bulletOnScreen;
+
         private final Image imageBrick;
         private final Image imageBush;
         private final Image imageSteel;
-        private final Image imageBullet;
+        private Image imageBullet;
         private final Image imageLogo;
 
         private boolean showFirstTank;
@@ -162,21 +184,23 @@ public class Window extends JFrame {
         }
 
         public void paintFirstTank(Graphics g) {
+            firstTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getFirstTank().getRotationAngle());
             Tank tank = world.getFirstTank();
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
-            g.drawImage(imageTank, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+            g.drawImage(firstTankOnScreen, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
         }
 
         public void paintSecondTank(Graphics g) {
+            secondTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getSecondTank().getRotationAngle());
             Tank tank = world.getSecondTank();
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
-            g.drawImage(imageTank, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+            g.drawImage(secondTankOnScreen, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
         }
 
         public void paintBush(Graphics g) {
-            List<Bush> bushList = world.getBushList();
+            bushList = world.getBushList();
             for (Bush b: bushList) {
                 int x = b.getX() * CELL_PIXEL_SIZE;
                 int y = b.getY()  * CELL_PIXEL_SIZE;
@@ -186,7 +210,7 @@ public class Window extends JFrame {
         }
 
         public void paintBrick(Graphics g) {
-            List<Brick> brickList = world.getBrickList();
+            brickList = world.getBrickList();
             for (Brick b: brickList) {
                 int x = b.getX() * CELL_PIXEL_SIZE;
                 int y = b.getY()  * CELL_PIXEL_SIZE;
@@ -195,7 +219,7 @@ public class Window extends JFrame {
         }
 
         public void paintSteel(Graphics g) {
-            List<Steel> steelList = world.getSteelList();
+            steelList = world.getSteelList();
             for (Steel s: steelList) {
                 int x = s.getX() * CELL_PIXEL_SIZE;
                 int y = s.getY() * CELL_PIXEL_SIZE;
@@ -206,10 +230,11 @@ public class Window extends JFrame {
         public void paintBullet(Graphics g) {
             List<Bullet> bulletList = world.getBulletList();
             for (Bullet bullet: bulletList) {
+                bulletOnScreen = rotateImage(convertToBufferedImage(imageBullet), bullet.getRotationAngle());
                 int x = bullet.getX() * CELL_PIXEL_SIZE;
                 int y = bullet.getY() * CELL_PIXEL_SIZE;
                 if (!world.isInBush(bullet.getX(), bullet.getY())) {
-                    g.drawImage(imageBullet, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+                    g.drawImage(bulletOnScreen, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
                 }
             }
         }
@@ -219,6 +244,44 @@ public class Window extends JFrame {
 
         public void setShowSecondTank(boolean status) {
             showSecondTank = status;
+        }
+
+        private BufferedImage convertToBufferedImage(Image image)
+        {
+            BufferedImage newImage = new BufferedImage(
+                    image.getWidth(null), image.getHeight(null),
+                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = newImage.createGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
+            return newImage;
+        }
+
+        public BufferedImage rotateImage(BufferedImage src, int rotationAngle) {
+            double theta = (Math.PI * 2) / 360 * rotationAngle;
+            int width = src.getWidth();
+            int height = src.getHeight();
+            BufferedImage dest;
+            if (rotationAngle == 90 || rotationAngle == 270) {
+                dest = new BufferedImage(src.getHeight(), src.getWidth(), src.getType());
+            } else {
+                dest = new BufferedImage(src.getWidth(), src.getHeight(), src.getType());
+            }
+
+            Graphics2D graphics2D = dest.createGraphics();
+
+            if (rotationAngle == 90) {
+                graphics2D.translate((height - width) / 2, (height - width) / 2);
+                graphics2D.rotate(theta, height / 2, width / 2);
+            } else if (rotationAngle == 270) {
+                graphics2D.translate((width - height) / 2, (width - height) / 2);
+                graphics2D.rotate(theta, height / 2, width / 2);
+            } else {
+                graphics2D.translate(0, 0);
+                graphics2D.rotate(theta, width / 2, height / 2);
+            }
+            graphics2D.drawRenderedImage(src, null);
+            return dest;
         }
     }
 
@@ -276,8 +339,28 @@ public class Window extends JFrame {
         }
     }
 
-    class PreGameUI extends JPanel {
+    class WelcomeUI extends JPanel {
+        public static final int CELL_PIXEL_SIZE = 50;
+        private final Image imageLogo;
 
+        public WelcomeUI() {
+            setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
+                    worldSize * CELL_PIXEL_SIZE));
+            imageLogo = new ImageIcon("img/logo.png").getImage();
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            paintLogo(g);
+        }
+
+        public void paintLogo(Graphics g) {
+            g.drawImage(imageLogo, 0, 0, worldSize * CELL_PIXEL_SIZE, worldSize * CELL_PIXEL_SIZE, null, null);
+        }
+    }
+
+    class PreGameUI extends JPanel {
         private JButton map1;
         private JButton map2;
         private JButton map3;
@@ -309,6 +392,7 @@ public class Window extends JFrame {
                     selectMap = true;
                     map2.setEnabled(false);
                     map3.setEnabled(false);
+                    mapSelected();
                     Window.this.requestFocus();
                 }
             });
@@ -324,6 +408,7 @@ public class Window extends JFrame {
                     selectMap = true;
                     map1.setEnabled(false);
                     map3.setEnabled(false);
+                    mapSelected();
                     Window.this.requestFocus();
                 }
             });
@@ -339,6 +424,7 @@ public class Window extends JFrame {
                     selectMap = true;
                     map1.setEnabled(false);
                     map2.setEnabled(false);
+                    mapSelected();
                     Window.this.requestFocus();
                 }
             });
@@ -353,6 +439,7 @@ public class Window extends JFrame {
                     selectMode = true;
                     duo.setEnabled(false);
                     soloMode = true;
+                    modeSelected();
                     Window.this.requestFocus();
                 }
             });
@@ -367,6 +454,7 @@ public class Window extends JFrame {
                     selectMode = true;
                     solo.setEnabled(false);
                     duoMode = true;
+                    modeSelected();
                     Window.this.requestFocus();
                 }
             });

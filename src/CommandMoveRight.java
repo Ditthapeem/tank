@@ -7,5 +7,6 @@ public class CommandMoveRight extends Command {
     @Override
     public void execute() {
         this.getTank().turnEast();
+        this.getTank().setRotationAngle(90);
     }
 }

@@ -7,6 +7,7 @@ public class CommandMoveUp extends Command {
     @Override
     public void execute() {
         this.getTank().turnNorth();
+        this.getTank().setRotationAngle(0);
     }
 
 }

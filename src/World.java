@@ -94,6 +94,7 @@ public class World {
         Bullet newBullet = new Bullet(srcTank.getX() + srcTank.getdX(), srcTank.getY() + srcTank.getdY());
         newBullet.setdX(srcTank.getdX());
         newBullet.setdY(srcTank.getdY());
+        newBullet.setRotationAngle(srcTank.getRotationAngle());
         bulletList.add(newBullet);
     }
 
