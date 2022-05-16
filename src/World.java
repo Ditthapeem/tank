@@ -1,13 +1,18 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class World {
 
-    private MapDefault mapDefault;
+    private Map map;
     private int size;
 
-    private Tank tank;
-    private Tank enemyTank;
+    private Tank firstTank;
+    private Tank secondTank;
+
+    private int player1Score = 0;
+    private int player2Score = 0;
 
     private List<Bush> bushList;
     private List<Brick> brickList;
@@ -20,7 +25,6 @@ public class World {
 
     public World(int size) {
         this.size = size;
-        this.mapDefault = new MapDefault();
         isOver = false;
         bushList = new ArrayList<Bush>();
         brickList = new ArrayList<Brick>();
@@ -28,41 +32,63 @@ public class World {
         bulletList = new ArrayList<Bullet>();
         bulletToRemove = new ArrayList<Bullet>();
         brickToRemove = new ArrayList<Brick>();
-        addObjectList();
     }
 
-    private void addObjectList() {
+    public void addObjectList() {
         addBushList();
         addBrickList();
         addSteelList();
-        addMyTank();
+        addFirstTank();
+        addSecondTank();
+    }
+
+    public void setMapDefault() {
+        this.map = new MapDefault();
+        addObjectList();
+    }
+
+    public void setMapTomb() {
+        this.map = new MapTomb();
+        addObjectList();
+    }
+
+    public void setMapSpecial() {
+        this.map = new MapSpecial();
+        addObjectList();
     }
 
     private void addBushList() {
-        List<List<Integer>> listMapBush = this.mapDefault.getListMapBush();
+        List<List<Integer>> listMapBush = this.map.getListMapBush();
         for (List<Integer> b: listMapBush) {
             bushList.add(new Bush(b.get(0)-1, b.get(1)-1));
         }
     }
 
     private void addSteelList() {
-        List<List<Integer>> listMapSteel = this.mapDefault.getListMapSteel();
+        List<List<Integer>> listMapSteel = this.map.getListMapSteel();
         for (List<Integer> s: listMapSteel) {
             steelList.add(new Steel(s.get(0)-1, s.get(1)-1));
         }
     }
 
     private void addBrickList() {
-        List<List<Integer>> listBrick = this.mapDefault.getListMapBrick();
+        List<List<Integer>> listBrick = this.map.getListMapBrick();
         for (List<Integer> b: listBrick) {
             brickList.add(new Brick(b.get(0)-1, b.get(1)-1));
         }
     }
 
-    private void addMyTank() {
-        List<List<Integer>> myTank = this.mapDefault.getListMapMyTank();
+    private void addFirstTank() {
+        List<List<Integer>> myTank = this.map.getListMapFirstTank();
         for (List<Integer> t: myTank) {
-            tank = new Tank(t.get(0)-1, t.get(1)-1);
+            firstTank = new Tank(t.get(0)-1, t.get(1)-1);
+        }
+    }
+
+    public void addSecondTank() {
+        List<List<Integer>> myTank = this.map.getListMapSecondTank();
+        for (List<Integer> t: myTank) {
+            secondTank = new Tank(t.get(0)-1, t.get(1)-1);
         }
     }
 
@@ -70,21 +96,34 @@ public class World {
         Bullet newBullet = new Bullet(srcTank.getX() + srcTank.getdX(), srcTank.getY() + srcTank.getdY());
         newBullet.setdX(srcTank.getdX());
         newBullet.setdY(srcTank.getdY());
+        newBullet.setRotationAngle(srcTank.getRotationAngle());
         bulletList.add(newBullet);
     }
 
     public void moveFirstTank() {
-        if (canMove(tank)) {
-            tank.move();
+        if (canMove(firstTank)) {
+            firstTank.move();
+        }
+    }
+
+    public void moveSecondTank() {
+        if (canMove(secondTank)) {
+            secondTank.move();
         }
     }
 
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
     }
 
+    public boolean firstTankExist(int x, int y) {
+        return firstTank.getX() == x && firstTank.getY() == y;
+    }
+    public boolean secondTankExist(int x, int y) {
+        return secondTank.getX() == x && secondTank.getY() == y;
+    }
     public boolean isInBush(int x, int y) {
         return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
     }
@@ -112,6 +151,13 @@ public class World {
                 bulletToRemove.add(bullet);
                 brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
                                     .findFirst().orElse(null));
+            } else if (firstTankExist(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+                showMessageDialog(null, "Game Over. Player 2 wins.");
+            } else if (secondTankExist(bullet.getX(), bullet.getY())) {
+                bulletToRemove.add(bullet);
+                showMessageDialog(null, "Game Over. Player 1 wins.");
+
             } else {
                 bullet.move();
             }
@@ -140,10 +186,30 @@ public class World {
         return bulletList;
     }
 
-    public Tank getTank() {
-        return tank;
+    public Tank getFirstTank() {
+        return firstTank;
     }
 
+    public Tank getSecondTank() {
+        return secondTank;
+    }
+    
+    public int getPlayer1Score() {
+        return player1Score;
+    }
+
+    public int getPlayer2Score() {
+        return player2Score;
+    }
+
+    public void setPlayer1Score(int player1Score) {
+        this.player1Score = player1Score;
+    }
+
+    public void setPlayer2Score(int player2Score) {
+        this.player2Score = player2Score;
+    }
+        
     public boolean getIsStart() {
         return isStart;
     }
