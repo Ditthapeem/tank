@@ -166,15 +166,25 @@ public class Window extends JFrame {
             if (!selectMap) {
                 paintLogo(g);
             }else {
-                paintBush(g);
-                paintBrick(g);
-                paintSteel(g);
-                paintBullet(g);
-                if (showFirstTank) {
-                    paintFirstTank(g);
-                }
-                if (showSecondTank) {
-                    paintSecondTank(g);
+                if(duoMode){
+                    paintBush(g);
+                    paintBrick(g);
+                    paintSteel(g);
+                    paintBullet(g);
+                    if (showFirstTank) {
+                        paintFirstTank(g);
+                    }
+                    if (showSecondTank) {
+                        paintSecondTank(g);
+                    }
+                } else {
+                    paintBush(g);
+                    paintBrick(g);
+                    paintSteel(g);
+                    paintBullet(g);
+                    if (showFirstTank) {
+                        paintFirstTank(g);
+                    }
                 }
             }
         }
