@@ -11,6 +11,8 @@ public class MapSpecial implements Map {
 
     public List<List<Integer>> listMapSecondTank = Arrays.asList();
 
+    public List<List<Integer>> listEnemyTank = Arrays.asList();
+
     public MapSpecial() {
         addObjectListMap();
     }
@@ -22,6 +24,7 @@ public class MapSpecial implements Map {
         addListMapSteel();
         addListMapFirstTank();
         addListMapSecondTank();
+        addListEnemyTank();
     }
 
     @Override
@@ -32,6 +35,13 @@ public class MapSpecial implements Map {
     @Override
     public void addListMapSecondTank() {
         listMapSecondTank = Arrays.asList(Arrays.asList(10, 12));
+    }
+
+    @Override
+    public void addListEnemyTank() {
+        listEnemyTank = Arrays.asList(  Arrays.asList(10, 12),
+                                        Arrays.asList(5, 1),
+                                        Arrays.asList(12, 1));
     }
 
     @Override
@@ -133,5 +143,10 @@ public class MapSpecial implements Map {
     @Override
     public List<List<Integer>> getListMapSecondTank() {
         return listMapSecondTank;
+    }
+
+    @Override
+    public List<List<Integer>> getListEnemyTank() {
+        return null;
     }
 }

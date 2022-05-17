@@ -11,6 +11,8 @@ public class MapTomb implements Map {
 
     public List<List<Integer>> listMapSecondTank = Arrays.asList();
 
+    public List<List<Integer>> listEnemyTank = Arrays.asList();
+
     public MapTomb() {
         addObjectListMap();
     }
@@ -22,6 +24,7 @@ public class MapTomb implements Map {
         addListMapSteel();
         addListMapFirstTank();
         addListMapSecondTank();
+        addListEnemyTank();
     }
 
     @Override
@@ -32,6 +35,13 @@ public class MapTomb implements Map {
     @Override
     public void addListMapSecondTank() {
         listMapSecondTank = Arrays.asList(Arrays.asList(12, 5));
+    }
+
+    @Override
+    public void addListEnemyTank() {
+        listEnemyTank = Arrays.asList(  Arrays.asList(12, 12),
+                                        Arrays.asList(9, 12),
+                                        Arrays.asList(8, 1));
     }
 
     @Override
@@ -100,46 +110,46 @@ public class MapTomb implements Map {
 
     @Override
     public void addListMapSteel() {
-        listMapSteel = Arrays.asList( Arrays.asList(1, 9),
-                Arrays.asList(1, 10),
-                Arrays.asList(1, 11),
-                Arrays.asList(1, 12),
-                Arrays.asList(2, 1),
-                Arrays.asList(2, 2),
-                Arrays.asList(2, 3),
-                Arrays.asList(2, 4),
-                Arrays.asList(3, 5),
-                Arrays.asList(3, 6),
-                Arrays.asList(4, 9),
-                Arrays.asList(4, 10),
-                Arrays.asList(4, 11),
-                Arrays.asList(4, 12),
-                Arrays.asList(5, 7),
-                Arrays.asList(5, 8),
-                Arrays.asList(6, 1),
-                Arrays.asList(6, 2),
-                Arrays.asList(6, 3),
-                Arrays.asList(6, 4),
-                Arrays.asList(7, 9),
-                Arrays.asList(7, 10),
-                Arrays.asList(7, 11),
-                Arrays.asList(7, 12),
-                Arrays.asList(8, 5),
-                Arrays.asList(8, 6),
-                Arrays.asList(9, 1),
-                Arrays.asList(9, 2),
-                Arrays.asList(9, 3),
-                Arrays.asList(9, 4),
-                Arrays.asList(10, 7),
-                Arrays.asList(10, 8),
-                Arrays.asList(11, 9),
-                Arrays.asList(11, 10),
-                Arrays.asList(11, 11),
-                Arrays.asList(11, 12),
-                Arrays.asList(12, 1),
-                Arrays.asList(12, 2),
-                Arrays.asList(12, 3),
-                Arrays.asList(12, 4));
+        listMapSteel = Arrays.asList(   Arrays.asList(1, 9),
+                                        Arrays.asList(1, 10),
+                                        Arrays.asList(1, 11),
+                                        Arrays.asList(1, 12),
+                                        Arrays.asList(2, 1),
+                                        Arrays.asList(2, 2),
+                                        Arrays.asList(2, 3),
+                                        Arrays.asList(2, 4),
+                                        Arrays.asList(3, 5),
+                                        Arrays.asList(3, 6),
+                                        Arrays.asList(4, 9),
+                                        Arrays.asList(4, 10),
+                                        Arrays.asList(4, 11),
+                                        Arrays.asList(4, 12),
+                                        Arrays.asList(5, 7),
+                                        Arrays.asList(5, 8),
+                                        Arrays.asList(6, 1),
+                                        Arrays.asList(6, 2),
+                                        Arrays.asList(6, 3),
+                                        Arrays.asList(6, 4),
+                                        Arrays.asList(7, 9),
+                                        Arrays.asList(7, 10),
+                                        Arrays.asList(7, 11),
+                                        Arrays.asList(7, 12),
+                                        Arrays.asList(8, 5),
+                                        Arrays.asList(8, 6),
+                                        Arrays.asList(9, 1),
+                                        Arrays.asList(9, 2),
+                                        Arrays.asList(9, 3),
+                                        Arrays.asList(9, 4),
+                                        Arrays.asList(10, 7),
+                                        Arrays.asList(10, 8),
+                                        Arrays.asList(11, 9),
+                                        Arrays.asList(11, 10),
+                                        Arrays.asList(11, 11),
+                                        Arrays.asList(11, 12),
+                                        Arrays.asList(12, 1),
+                                        Arrays.asList(12, 2),
+                                        Arrays.asList(12, 3),
+                                        Arrays.asList(12, 4));
     }
 
     @Override
@@ -165,5 +175,10 @@ public class MapTomb implements Map {
     @Override
     public List<List<Integer>> getListMapSecondTank() {
         return listMapSecondTank;
+    }
+
+    @Override
+    public List<List<Integer>> getListEnemyTank() {
+        return null;
     }
 }
