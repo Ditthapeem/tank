@@ -164,7 +164,7 @@ public class Window extends JFrame {
             imageSteel = new ImageIcon("img/steel.png").getImage();
             imageLogo = new ImageIcon("img/logo.png").getImage();
             imageBullet = new ImageIcon("img/bullet.png").getImage();
-            imageEnemyTank = new ImageIcon("img/tank.png").getImage();
+            imageEnemyTank = new ImageIcon("img/enemyTank.png").getImage();
             showFirstTank = true;
             showSecondTank = true;
         }
