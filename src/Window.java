@@ -19,7 +19,6 @@ public class Window extends JFrame {
     private GameUI gameUI;
     private PreGameUI preGameUI;
     private InGameUI inGameUI;
-    private WelcomeUI welcomeUI;
 
     public boolean selectMap = false;
     public boolean selectMode = false;
@@ -28,11 +27,8 @@ public class Window extends JFrame {
     public boolean duoMode = false;
 
     private Thread thread;
-    private Controller controller;
-
 
     public Window() {
-        controller = new Controller();
         world = new World(worldSize);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -74,7 +70,8 @@ public class Window extends JFrame {
 
     private void startGame() {
         gameUI = new GameUI();
-        addKeyListener(controller);
+        PlayerOneController playerOneController = new PlayerOneController();
+        addKeyListener(playerOneController);
         thread = new Thread() {
             @Override
             public void run() {
@@ -126,6 +123,11 @@ public class Window extends JFrame {
         }
     }
 
+    public void multiplayer() {
+        PlayerTwoController playerTwoController = new PlayerTwoController();
+        addKeyListener(playerTwoController);
+    }
+
     class GameUI extends JPanel {
         public static final int CELL_PIXEL_SIZE = 50;
 
@@ -134,14 +136,11 @@ public class Window extends JFrame {
         private List<Steel> steelList;
 
         private final Image imageTank;
-        private BufferedImage firstTankOnScreen;
-        private BufferedImage secondTankOnScreen;
-        private BufferedImage bulletOnScreen;
 
         private final Image imageBrick;
         private final Image imageBush;
         private final Image imageSteel;
-        private Image imageBullet;
+        private final Image imageBullet;
         private final Image imageLogo;
 
         private boolean showFirstTank;
@@ -165,7 +164,7 @@ public class Window extends JFrame {
             super.paint(g);
             if (!selectMap) {
                 paintLogo(g);
-            }else {
+            } else {
                 paintBush(g);
                 paintBrick(g);
                 paintSteel(g);
@@ -184,7 +183,7 @@ public class Window extends JFrame {
         }
 
         public void paintFirstTank(Graphics g) {
-            firstTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getFirstTank().getRotationAngle());
+            BufferedImage firstTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getFirstTank().getRotationAngle());
             Tank tank = world.getFirstTank();
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
@@ -192,7 +191,7 @@ public class Window extends JFrame {
         }
 
         public void paintSecondTank(Graphics g) {
-            secondTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getSecondTank().getRotationAngle());
+            BufferedImage secondTankOnScreen = rotateImage(convertToBufferedImage(imageTank), world.getSecondTank().getRotationAngle());
             Tank tank = world.getSecondTank();
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
@@ -230,7 +229,7 @@ public class Window extends JFrame {
         public void paintBullet(Graphics g) {
             List<Bullet> bulletList = world.getBulletList();
             for (Bullet bullet: bulletList) {
-                bulletOnScreen = rotateImage(convertToBufferedImage(imageBullet), bullet.getRotationAngle());
+                BufferedImage bulletOnScreen = rotateImage(convertToBufferedImage(imageBullet), bullet.getRotationAngle());
                 int x = bullet.getX() * CELL_PIXEL_SIZE;
                 int y = bullet.getY() * CELL_PIXEL_SIZE;
                 if (!world.isInBush(bullet.getX(), bullet.getY())) {
@@ -246,6 +245,12 @@ public class Window extends JFrame {
             showSecondTank = status;
         }
 
+        public void clearMap() {
+            bushList.clear();
+            brickList.clear();
+            steelList.clear();
+        }
+
         private BufferedImage convertToBufferedImage(Image image)
         {
             BufferedImage newImage = new BufferedImage(
@@ -257,7 +262,7 @@ public class Window extends JFrame {
             return newImage;
         }
 
-        public BufferedImage rotateImage(BufferedImage src, int rotationAngle) {
+        private BufferedImage rotateImage(BufferedImage src, int rotationAngle) {
             double theta = (Math.PI * 2) / 360 * rotationAngle;
             int width = src.getWidth();
             int height = src.getHeight();
@@ -285,7 +290,7 @@ public class Window extends JFrame {
         }
     }
 
-    class Controller extends KeyAdapter {
+    class PlayerOneController extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             if(e.getKeyCode() == KeyEvent.VK_W) {
@@ -304,7 +309,24 @@ public class Window extends JFrame {
                 Command c = new CommandMoveRight(world.getFirstTank());
                 c.execute();
                 world.moveFirstTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_UP) {
+            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+                world.addBullet(world.getFirstTank());
+            } else{
+                // Don't allow starting when press key except direction key
+                return;
+            }
+            gameUI.setShowFirstTank(!world.isInBush(
+                    world.getFirstTank().getX(),
+                    world.getFirstTank().getY()));
+            gameUI.repaint();
+            world.setIsStart(true);
+        }
+    }
+
+    class PlayerTwoController extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_UP) {
                 Command c = new CommandMoveUp(world.getSecondTank());
                 c.execute();
                 world.moveSecondTank();
@@ -320,17 +342,12 @@ public class Window extends JFrame {
                 Command c = new CommandMoveRight(world.getSecondTank());
                 c.execute();
                 world.moveSecondTank();
-            } else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                world.addBullet(world.getFirstTank());
             } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
                 world.addBullet(world.getSecondTank());
             } else{
                 // Don't allow starting when press key except direction key
                 return;
             }
-            gameUI.setShowFirstTank(!world.isInBush(
-                    world.getFirstTank().getX(),
-                    world.getFirstTank().getY()));
             gameUI.setShowSecondTank(!world.isInBush(
                     world.getSecondTank().getX(),
                     world.getSecondTank().getY()));
@@ -454,6 +471,7 @@ public class Window extends JFrame {
                     selectMode = true;
                     solo.setEnabled(false);
                     duoMode = true;
+                    multiplayer();
                     modeSelected();
                     Window.this.requestFocus();
                 }
