@@ -20,6 +20,7 @@ public class World {
     private List<Steel> steelList;
     private List<Bullet> bulletList;
     private List<Bullet> bulletToRemove;
+    private List<Tank> enemyTankList;
     private boolean isStart;
     private boolean isOver;
 
@@ -32,6 +33,7 @@ public class World {
         bulletList = new ArrayList<Bullet>();
         bulletToRemove = new ArrayList<Bullet>();
         brickToRemove = new ArrayList<Brick>();
+        enemyTankList = new ArrayList<Tank>();
     }
 
     public void addObjectList() {
@@ -40,6 +42,7 @@ public class World {
         addSteelList();
         addFirstTank();
         addSecondTank();
+        addEnemyTank();
     }
 
     public void setMapDefault() {
@@ -89,6 +92,13 @@ public class World {
         List<List<Integer>> myTank = this.map.getListMapSecondTank();
         for (List<Integer> t: myTank) {
             secondTank = new Tank(t.get(0)-1, t.get(1)-1);
+        }
+    }
+
+    public void addEnemyTank() {
+        List<List<Integer>> listEnemyTank = this.map.getListEnemyTank();
+        for (List<Integer> t: listEnemyTank) {
+            enemyTankList.add(new Tank(t.get(0)-1, t.get(1)-1));
         }
     }
 
@@ -168,6 +178,10 @@ public class World {
         for (Brick brick: brickToRemove) {
             brickList.remove(brick);
         }
+    }
+
+    public List<Tank> getEnemyTankList() {
+        return enemyTankList;
     }
 
     public List<Bush> getBushList() {

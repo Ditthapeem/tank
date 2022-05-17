@@ -41,7 +41,7 @@ public class MapTomb implements Map {
     public void addListEnemyTank() {
         listEnemyTank = Arrays.asList(  Arrays.asList(12, 12),
                                         Arrays.asList(9, 12),
-                                        Arrays.asList(8, 1));
+                                        Arrays.asList(7, 1));
     }
 
     @Override
@@ -179,6 +179,6 @@ public class MapTomb implements Map {
 
     @Override
     public List<List<Integer>> getListEnemyTank() {
-        return null;
+        return listEnemyTank;
     }
 }

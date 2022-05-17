@@ -24,6 +24,7 @@ public class MapDefault implements Map {
         addListMapSteel();
         addListMapFirstTank();
         addListMapSecondTank();
+        addListEnemyTank();
     }
 
     @Override
@@ -171,7 +172,7 @@ public class MapDefault implements Map {
 
     @Override
     public List<List<Integer>> getListEnemyTank() {
-        return null;
+        return listEnemyTank;
     }
 
 

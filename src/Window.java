@@ -132,8 +132,10 @@ public class Window extends JFrame {
         private List<Bush> bushList;
         private List<Brick> brickList;
         private List<Steel> steelList;
+        private List<Tank> enemyTankList;
 
         private final Image imageTank;
+        private final Image imageEnemyTank;
         private BufferedImage firstTankOnScreen;
         private BufferedImage secondTankOnScreen;
         private BufferedImage bulletOnScreen;
@@ -141,7 +143,7 @@ public class Window extends JFrame {
         private final Image imageBrick;
         private final Image imageBush;
         private final Image imageSteel;
-        private Image imageBullet;
+        private final Image imageBullet;
         private final Image imageLogo;
 
         private boolean showFirstTank;
@@ -156,6 +158,7 @@ public class Window extends JFrame {
             imageSteel = new ImageIcon("img/steel.png").getImage();
             imageLogo = new ImageIcon("img/logo.png").getImage();
             imageBullet = new ImageIcon("img/bullet.png").getImage();
+            imageEnemyTank = new ImageIcon("img/tank.png").getImage();
             showFirstTank = true;
             showSecondTank = true;
         }
@@ -185,6 +188,7 @@ public class Window extends JFrame {
                     if (showFirstTank) {
                         paintFirstTank(g);
                     }
+                    paintEnemyTank(g);
                 }
             }
         }
@@ -207,6 +211,15 @@ public class Window extends JFrame {
             int x = tank.getX() * CELL_PIXEL_SIZE;
             int y = tank.getY()  * CELL_PIXEL_SIZE;
             g.drawImage(secondTankOnScreen, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+        }
+
+        public void paintEnemyTank(Graphics g) {
+            enemyTankList = world.getEnemyTankList();
+            for (Tank t: enemyTankList) {
+                int x = t.getX() * CELL_PIXEL_SIZE;
+                int y = t.getY() * CELL_PIXEL_SIZE;
+                g.drawImage(imageEnemyTank, x, y, CELL_PIXEL_SIZE, CELL_PIXEL_SIZE, null, null);
+            }
         }
 
         public void paintBush(Graphics g) {
