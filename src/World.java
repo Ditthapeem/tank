@@ -22,7 +22,19 @@ public class World {
     private List<Bullet> bulletToRemove;
     private List<Tank> enemyTankList;
     private boolean isStart;
+
+    public void setSoloMode(boolean soloMode) {
+        this.soloMode = soloMode;
+    }
+
+    public void setDuoMode(boolean duoMode) {
+        this.duoMode = duoMode;
+    }
+
     private boolean isOver;
+
+    public boolean soloMode = false;
+    public boolean duoMode = false;
 
     public World(int size) {
         this.size = size;
@@ -41,7 +53,11 @@ public class World {
         addBrickList();
         addSteelList();
         addFirstTank();
-        addSecondTank();
+        if (duoMode) {
+            addSecondTank();
+        } else {
+            addSecondTank();
+        }
         addEnemyTank();
     }
 
@@ -122,9 +138,17 @@ public class World {
         }
     }
 
+    public  void moveEnemyTank() {
+        moveEnemy();
+    }
+
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
+    }
+
+    public boolean canEnemyMove(int newX, int newY) {
         return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
     }
 
@@ -177,6 +201,38 @@ public class World {
         }
         for (Brick brick: brickToRemove) {
             brickList.remove(brick);
+        }
+    }
+
+    public void moveEnemy() {
+        int myX = firstTank.getX();
+        int myY = firstTank.getY();
+        for (Tank t: enemyTankList) {
+            if (canMove(t)) {
+                int enemyX = t.getX();
+                int enemyY = t.getY();
+                if (enemyX < myX && enemyY < myY) {
+                    enemyX += 1;
+                } else if (enemyX < myX && enemyY > myY) {
+                    enemyX += 1;
+                } else if (enemyX > myX && enemyY < myY) {
+                    enemyX -= 1;
+                } else if (enemyX > myX && enemyY > myY) {
+                    enemyX -= 1;
+                } else if (enemyX == myX && enemyY > myY) {
+                    enemyY -= 1;
+                } else if (enemyX > myX && enemyY == myY) {
+                    enemyX -= 1;
+                } else if (enemyX == myX && enemyY < myY) {
+                    enemyY += 1;
+                } else if (enemyX < myX && enemyY == myY) {
+                    enemyX += 1;
+                }
+                if (canEnemyMove(enemyX, enemyY)) {
+                    t.setPosition(enemyX, enemyY);
+                }
+
+            }
         }
     }
 

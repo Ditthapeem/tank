@@ -81,6 +81,12 @@ public class Window extends JFrame {
                 while (!world.getIsOver()) {
 
                     moving();
+
+                    if (soloMode) {
+                        world.moveEnemyTank();
+                        gameUI.repaint();
+                    }
+
                     gameUI.repaint();
                     try {
                         Thread.sleep(150);
@@ -462,6 +468,7 @@ public class Window extends JFrame {
                     selectMode = true;
                     duo.setEnabled(false);
                     soloMode = true;
+                    world.setSoloMode(true);
                     modeSelected();
                     Window.this.requestFocus();
                 }
@@ -476,6 +483,7 @@ public class Window extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     selectMode = true;
                     solo.setEnabled(false);
+                    world.setDuoMode(true);
                     duoMode = true;
                     modeSelected();
                     Window.this.requestFocus();
