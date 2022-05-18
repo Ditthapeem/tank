@@ -1,4 +1,5 @@
-# tank
+# Tank Game
+An 8-bit game consist of 2 tanks or more fighting while each tank has only 1 life. This game has 2 mode-multiplayer, single player.
 
 ### Member
 
