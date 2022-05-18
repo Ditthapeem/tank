@@ -520,41 +520,44 @@ public class Window extends JFrame {
         private JLabel duoHealth1;
         private JLabel duoHealth2;
 
+        private Image wasd;
+        private Image spaceBar;
+        private Image arrow;
+        private Image enter;
+
         public InGameUI() {
             setDoubleBuffered(true);
+            wasd = new ImageIcon("img/wasd.png").getImage();
+            spaceBar = new ImageIcon("img/space-bar-png-7.png").getImage();
+            arrow = new ImageIcon("img/arrowkey.png").getImage();
+            enter = new ImageIcon("img/enter.png").getImage();
             setPreferredSize(new Dimension(50 * worldSize, 50));
             repaint();
-        }
-
-        public void setPlayerLabel() {
-            if (soloMode) {
-                soloHealth = new JLabel("Player: ");
-                add(soloHealth);
-            } else if (duoMode) {
-                duoHealth1 = new JLabel("Player1: ");
-                duoHealth2 = new JLabel("Player2: ");
-                add(duoHealth1);
-                add(duoHealth2);
-            }
         }
 
         @Override
         public void paint(Graphics g) {
             super.paint(g);
             if (soloMode) {
-                paintScoreSolo(g);
+                paintSolo(g);
             } else if (duoMode) {
-                paintScoreDuo(g);
+                paintDuo(g);
             }
         }
 
-        public void paintScoreSolo(Graphics g) {
-            g.drawString("PlayerScore: " + world.getPlayer1Score(), 20, 20);
+        public void paintSolo(Graphics g) {
+            g.drawString("Player1's: ", 20, 20);
+            g.drawImage(wasd, 40, 20, 20, 20, null, null);
+            g.drawImage(spaceBar, 70, 20, 20, 20, null, null);
         }
 
-        public void paintScoreDuo(Graphics g) {
-            g.drawString("Player1's Score: " + world.getPlayer1Score(), 20, 20);
-            g.drawString("Player2's Score: " + world.getPlayer2Score(), 20, 40);
+        public void paintDuo(Graphics g) {
+            g.drawString("Player1's: ", 20, 20);
+            g.drawImage(wasd, 40, 20, 20, 20, null, null);
+            g.drawImage(spaceBar, 70, 20, 20, 20, null, null);
+            g.drawString("Player2's: ", 20, 40);
+            g.drawImage(arrow, 40, 40, 20, 20, null, null);
+            g.drawImage(enter, 70, 40, 20, 20, null, null);
         }
     }
 
