@@ -553,7 +553,7 @@ public class Window extends JFrame {
             spaceBar = new ImageIcon("img/space-bar-png-7.png").getImage();
             arrow = new ImageIcon("img/arrowkey.png").getImage();
             enter = new ImageIcon("img/enter.png").getImage();
-            setPreferredSize(new Dimension(50 * worldSize, 50));
+            setPreferredSize(new Dimension(50 * worldSize, 100));
             repaint();
         }
 
@@ -569,17 +569,17 @@ public class Window extends JFrame {
 
         public void paintSolo(Graphics g) {
             g.drawString("Player1's: ", 20, 20);
-            g.drawImage(wasd, 40, 20, 20, 20, null, null);
-            g.drawImage(spaceBar, 70, 20, 20, 20, null, null);
+            g.drawImage(wasd, 40, 20, 80, 80, null, null);
+            g.drawImage(spaceBar, 120, 20, 100, 60, null, null);
         }
 
         public void paintDuo(Graphics g) {
             g.drawString("Player1's: ", 20, 20);
-            g.drawImage(wasd, 40, 20, 20, 20, null, null);
-            g.drawImage(spaceBar, 70, 20, 20, 20, null, null);
-            g.drawString("Player2's: ", 20, 40);
-            g.drawImage(arrow, 40, 40, 20, 20, null, null);
-            g.drawImage(enter, 70, 40, 20, 20, null, null);
+            g.drawImage(wasd, 40, 20, 80, 80, null, null);
+            g.drawImage(spaceBar, 120, 20, 100, 60, null, null);
+            g.drawString("Player2's: ", 300, 20);
+            g.drawImage(arrow, 300, 20, 80, 80, null, null);
+            g.drawImage(enter, 380, 20, 100, 60, null, null);
         }
     }
 
