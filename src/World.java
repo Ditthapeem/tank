@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import static javax.swing.JOptionPane.showMessageDialog;
 
 public class World {
 
@@ -23,6 +22,12 @@ public class World {
     private List<Bullet> bulletToRemove;
     private List<Tank> enemyTankList;
     private boolean isStart;
+
+    public String getGameResult() {
+        return gameResult;
+    }
+
+    private String gameResult;
 
     public void setSoloMode(boolean soloMode) {
         this.soloMode = soloMode;
@@ -125,6 +130,10 @@ public class World {
         newBullet.setdY(srcTank.getdY());
         newBullet.setRotationAngle(srcTank.getRotationAngle());
         bulletList.add(newBullet);
+    }
+
+    public void restart() {
+        clearMap();
     }
 
     public void moveFirstTank() {
@@ -269,7 +278,6 @@ public class World {
 
     public void moveBullet() {
         try {
-            bulletToRemove.clear();
             for (Bullet bullet : bulletList) {
                 if (!isInBoundary(bullet.getX(), bullet.getY())) {
                     bulletToRemove.add(bullet);
@@ -281,15 +289,19 @@ public class World {
                             .findFirst().orElse(null));
                 } else if (firstTankExist(bullet.getX(), bullet.getY())) {
                     bulletToRemove.add(bullet);
-                    showMessageDialog(null, "Game Over. Player 2 wins.");
+                    gameResult = "Player 2 wins";
+                    isOver = true;
                 } else if (secondTankExist(bullet.getX(), bullet.getY())) {
                     bulletToRemove.add(bullet);
-                    showMessageDialog(null, "Game Over. Player 1 wins.");
+                    gameResult = "Player 1 wins";
                     isOver = true;
                 } else if (enemyTankExist(bullet.getX(), bullet.getY())) {
                     bulletToRemove.add(bullet);
-                    showMessageDialog(null, "Game Over. Player wins.");
-                    isOver = true;
+                    enemyTankList.remove(enemyTankList.stream().filter(tank -> tank.getX() == bullet.getX() && tank.getY() == bullet.getY()).findAny().orElse(null));
+                    if (enemyTankList.size() == 0) {
+                        gameResult = "Player Win";
+                        isOver = true;
+                    }
                 } else {
                     bullet.move();
                 }
@@ -297,9 +309,11 @@ public class World {
             for (Bullet bullet : bulletToRemove) {
                 bulletList.remove(bullet);
             }
+            bulletToRemove.clear();
             for (Brick brick : brickToRemove) {
                 brickList.remove(brick);
             }
+            brickToRemove.clear();
         } catch (ConcurrentModificationException e) {
             System.out.println(e);
         }
@@ -335,6 +349,16 @@ public class World {
 
             }
         }
+    }
+
+    public void clearMap() {
+        bushList.clear();
+        brickList.clear();
+        brickToRemove.clear();
+        steelList.clear();
+        bulletList.clear();
+        bulletToRemove.clear();
+        enemyTankList.clear();
     }
 
     public List<Tank> getEnemyTankList() {

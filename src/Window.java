@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 public class Window extends JFrame {
 
 
@@ -38,6 +40,7 @@ public class Window extends JFrame {
         world = new World(worldSize);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
     }
 
     public void initPregame() {
@@ -63,7 +66,7 @@ public class Window extends JFrame {
     }
 
     public void initMainLogo() {
-        WelcomeUI welcomeUI = new WelcomeUI();
+        welcomeUI = new WelcomeUI();
         add(welcomeUI, BorderLayout.CENTER);
         pack();
     }
@@ -93,6 +96,7 @@ public class Window extends JFrame {
                     e.printStackTrace();
                 }
             }
+            showMessageDialog(null, "Game Over. " + world.getGameResult() + ".");
         });
         if (soloMode) {
             aiTankThread = new Thread(() -> {
@@ -120,8 +124,8 @@ public class Window extends JFrame {
     }
 
     public void mapSelected() {
+        initGame();
         if (selectMode) {
-            initGame();
             deleteInitPregame();
             initInGame();
             startGame();
@@ -438,10 +442,11 @@ public class Window extends JFrame {
             map1.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    world.clearMap();
                     world.setMapDefault();
                     selectMap = true;
-                    map2.setEnabled(false);
-                    map3.setEnabled(false);
+//                    map2.setEnabled(false);
+//                    map3.setEnabled(false);
                     mapSelected();
                     Window.this.requestFocus();
                 }
@@ -454,10 +459,11 @@ public class Window extends JFrame {
             map2.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    world.clearMap();
                     world.setMapTomb();
                     selectMap = true;
-                    map1.setEnabled(false);
-                    map3.setEnabled(false);
+//                    map1.setEnabled(false);
+//                    map3.setEnabled(false);
                     mapSelected();
                     Window.this.requestFocus();
                 }
@@ -470,10 +476,11 @@ public class Window extends JFrame {
             map3.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    world.clearMap();
                     world.setMapSpecial();
                     selectMap = true;
-                    map1.setEnabled(false);
-                    map2.setEnabled(false);
+//                    map1.setEnabled(false);
+//                    map2.setEnabled(false);
                     mapSelected();
                     Window.this.requestFocus();
                 }
