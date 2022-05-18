@@ -516,9 +516,6 @@ public class Window extends JFrame {
     }
 
     class InGameUI extends JPanel {
-        private JLabel soloHealth;
-        private JLabel duoHealth1;
-        private JLabel duoHealth2;
 
         private Image wasd;
         private Image spaceBar;
