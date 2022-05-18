@@ -129,7 +129,9 @@ public class Window extends JFrame {
 
     public void restart() {
         bulletThread.interrupt();
-        aiTankThread.interrupt();
+        if (aiTankThread != null) {
+            aiTankThread.interrupt();
+        }
         world.restart();
         remove(gameUI);
         pack();
