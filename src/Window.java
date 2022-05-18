@@ -232,6 +232,9 @@ public class Window extends JFrame {
         public void paintEnemyTank(Graphics g) {
             enemyTankList = world.getEnemyTankList();
             for (Tank t: enemyTankList) {
+                if (!t.isShow()) {
+                    continue;
+                }
                 enemyTankOnscreen = rotateImage(convertToBufferedImage(imageEnemyTank), t.getRotationAngle());
                 int x = t.getX() * CELL_PIXEL_SIZE;
                 int y = t.getY() * CELL_PIXEL_SIZE;

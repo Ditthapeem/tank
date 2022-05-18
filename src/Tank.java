@@ -1,8 +1,10 @@
 public class Tank extends WObject {
     private int rotationAngle;
+    private boolean show;
     public Tank(int x, int y){
         super(x, y);
         rotationAngle = 0;
+        show = true;
     }
 
     public int getRotationAngle() {
@@ -13,6 +15,11 @@ public class Tank extends WObject {
         this.rotationAngle = rotationAngle;
     }
 
-    // TODO Make a tank can move
-    // TODO Make a tank can fire
+    public boolean isShow() {
+        return show;
+    }
+
+    public void setShow(boolean show) {
+        this.show = show;
+    }
 }
