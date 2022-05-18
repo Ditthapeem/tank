@@ -328,6 +328,7 @@ public class World {
         for (Tank t: enemyTankList) {
             if (canFire(t)) {
                 addBullet(t);
+                continue;
             }
             int rotationAngle = t.getRotationAngle();
             int enemyX = t.getX();
