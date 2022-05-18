@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -138,26 +139,118 @@ public class World {
         }
     }
 
-    public  void moveEnemyTank() {
+    public void moveEnemyTank() {
         moveEnemy();
     }
 
     public boolean canMove(WObject obj) {
         int newX = obj.getX() + obj.getdX();
         int newY = obj.getY() + obj.getdY();
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !secondTankExist(newX, newY);
     }
 
     public boolean canEnemyMove(int newX, int newY) {
-        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !firstTankExist(newX, newY);
+        return isInBoundary(newX, newY) && !isInBrick(newX, newY) && !isInSteel(newX, newY) && !firstTankExist(newX, newY) && !enemyTankExist(newX, newY);
     }
 
     public boolean firstTankExist(int x, int y) {
         return firstTank.getX() == x && firstTank.getY() == y;
     }
     public boolean secondTankExist(int x, int y) {
-        return secondTank.getX() == x && secondTank.getY() == y;
+        if (secondTank != null) {
+            return secondTank.getX() == x && secondTank.getY() == y;
+        }
+        return false;
     }
+    public boolean enemyTankExist(int x, int y) {
+        return enemyTankList.stream().anyMatch(tank -> tank.getX() == x && tank.getY() == y);
+    }
+
+    public boolean canFire(Tank tank) {
+        int myY = firstTank.getY();
+        boolean inRangeX;
+        boolean inRangeY;
+        int sideX = tank.getX() + tank.getdX();
+        int sideY = tank.getY() + tank.getdY();
+        while (true) {
+            if (isInSteel(sideX, tank.getY())) {
+                inRangeX = false;
+                break;
+            } else if (firstTankExist(sideX, tank.getY())) {
+                inRangeX = true;
+                break;
+            } else if (isInBrick(sideX, tank.getY())) {
+                inRangeX = false;
+                break;
+            } else if (!isInBoundary(sideX, tank.getY())) {
+                inRangeX = false;
+                break;
+            } else if (tank.getdX() == 0) {
+                inRangeX = false;
+                break;
+            }
+            sideX += tank.getdX();
+        }
+        while (true) {
+            if (isInSteel(tank.getX(), sideY)) {
+                inRangeY = false;
+                break;
+            } else if (firstTankExist(tank.getX(), sideY)) {
+                inRangeY = true;
+                break;
+            } else if (isInBrick(tank.getX(), sideY)) {
+                inRangeY = false;
+                break;
+            } else if (!isInBoundary(tank.getX(), sideY)) {
+                inRangeY = false;
+                break;
+            } else if (tank.getdY() == 0) {
+                inRangeY = false;
+                break;
+            }
+            sideY += tank.getdY();
+        }
+        return inRangeX || inRangeY;
+    }
+
+    public List<Integer> calculateEnemyMove(Tank tank) {
+        int myX = firstTank.getX();
+        int myY = firstTank.getY();
+        int enemyX = tank.getX();
+        int enemyY = tank.getY();
+        int rotationAngle = tank.getRotationAngle();
+        if (enemyX < myX && enemyY < myY) {
+            enemyX += 1;
+            rotationAngle = 90 ;
+        } else if (enemyX < myX && enemyY > myY) {
+            enemyX += 1;
+            rotationAngle = 90;
+        } else if (enemyX > myX && enemyY < myY) {
+            enemyX -= 1;
+            rotationAngle = 270;
+        } else if (enemyX > myX && enemyY > myY) {
+            enemyX -= 1;
+            rotationAngle = 270;
+        } else if (enemyX == myX && enemyY > myY) {
+            enemyY -= 1;
+            rotationAngle = 180;
+        } else if (enemyX > myX && enemyY == myY) {
+            enemyX -= 1;
+            rotationAngle = 270;
+        } else if (enemyX == myX && enemyY < myY) {
+            enemyY += 1;
+            rotationAngle = 0;
+        } else if (enemyX < myX && enemyY == myY) {
+            enemyX += 1;
+            rotationAngle = 90;
+        }
+        List<Integer> position = new ArrayList<>();
+        position.add(enemyX);
+        position.add(enemyY);
+        position.add(rotationAngle);
+        return position;
+    }
+
     public boolean isInBush(int x, int y) {
         return bushList.stream().anyMatch(bush -> bush.getX() == x && bush.getY() == y);
     }
@@ -174,33 +267,41 @@ public class World {
         return 0 <= x && x < size && 0 <= y && y < size;
     }
 
-    public void move() {
-        bulletToRemove.clear();
-        for (Bullet bullet: bulletList) {
-            if (!isInBoundary(bullet.getX(), bullet.getY())) {
-                bulletToRemove.add(bullet);
-            } else if (isInSteel(bullet.getX(), bullet.getY())) {
-                bulletToRemove.add(bullet);
-            } else if (isInBrick(bullet.getX(), bullet.getY())) {
-                bulletToRemove.add(bullet);
-                brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
-                                    .findFirst().orElse(null));
-            } else if (firstTankExist(bullet.getX(), bullet.getY())) {
-                bulletToRemove.add(bullet);
-                showMessageDialog(null, "Game Over. Player 2 wins.");
-            } else if (secondTankExist(bullet.getX(), bullet.getY())) {
-                bulletToRemove.add(bullet);
-                showMessageDialog(null, "Game Over. Player 1 wins.");
-
-            } else {
-                bullet.move();
+    public void moveBullet() {
+        try {
+            bulletToRemove.clear();
+            for (Bullet bullet : bulletList) {
+                if (!isInBoundary(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                } else if (isInSteel(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                } else if (isInBrick(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                    brickToRemove.add(brickList.stream().filter(brick -> brick.getX() == bullet.getX() && brick.getY() == bullet.getY())
+                            .findFirst().orElse(null));
+                } else if (firstTankExist(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                    showMessageDialog(null, "Game Over. Player 2 wins.");
+                } else if (secondTankExist(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                    showMessageDialog(null, "Game Over. Player 1 wins.");
+                    isOver = true;
+                } else if (enemyTankExist(bullet.getX(), bullet.getY())) {
+                    bulletToRemove.add(bullet);
+                    showMessageDialog(null, "Game Over. Player wins.");
+                    isOver = true;
+                } else {
+                    bullet.move();
+                }
             }
-        }
-        for (Bullet bullet: bulletToRemove) {
-            bulletList.remove(bullet);
-        }
-        for (Brick brick: brickToRemove) {
-            brickList.remove(brick);
+            for (Bullet bullet : bulletToRemove) {
+                bulletList.remove(bullet);
+            }
+            for (Brick brick : brickToRemove) {
+                brickList.remove(brick);
+            }
+        } catch (ConcurrentModificationException e) {
+            System.out.println(e);
         }
     }
 
@@ -290,9 +391,5 @@ public class World {
 
     public void setIsStart(boolean status) {
         isStart = status;
-    }
-
-    public int getSize() {
-        return size;
     }
 }
