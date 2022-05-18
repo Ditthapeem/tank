@@ -58,11 +58,21 @@ public class World {
         addBushList();
         addBrickList();
         addSteelList();
+    }
+
+    public void addPlayers() {
         addFirstTank();
         if (duoMode) {
             addSecondTank();
+        } else {
+            addEnemyTank();
         }
-        addEnemyTank();
+    }
+
+    public void removePlayers() {
+        firstTank = null;
+        secondTank = null;
+        enemyTankList.clear();
     }
 
     public void setMapDefault() {
@@ -132,6 +142,7 @@ public class World {
 
     public void restart() {
         clearMap();
+        isOver = false;
     }
 
     public void moveFirstTank() {
@@ -300,7 +311,6 @@ public class World {
                 } else if (enemyTankExist(bullet.getX(), bullet.getY())) {
                     bulletToRemove.add(bullet);
                     enemyTankList.remove(enemyTankList.stream().filter(tank -> tank.getX() == bullet.getX() && tank.getY() == bullet.getY()).findAny().orElse(null));
-                    System.out.println(enemyTankList.size());
                     if (enemyTankList.size() == 0) {
                         gameResult = "You Win";
                         isOver = true;
@@ -364,15 +374,6 @@ public class World {
             }
             t.setShow(!isInBush(t.getX(), t.getY()));
         }
-//        int myX = firstTank.getX();
-//        int myY = firstTank.getY();
-//        for (Tank t: enemyTankList) {
-//            int enemyX = t.getX();
-//            int enemyY = t.getY();
-//            List<Integer> enemyMove = calculateEnemyMove(t);
-//
-//
-//        }
     }
 
     public void clearMap() {

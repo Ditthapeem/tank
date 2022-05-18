@@ -12,6 +12,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.showOptionDialog;
 
 public class Window extends JFrame {
 
@@ -72,6 +73,8 @@ public class Window extends JFrame {
     }
 
     public void initInGame() {
+        world.removePlayers();
+        world.addPlayers();
         inGameUI = new InGameUI();
         add(inGameUI, BorderLayout.SOUTH);
         pack();
@@ -96,7 +99,8 @@ public class Window extends JFrame {
                     e.printStackTrace();
                 }
             }
-            showMessageDialog(null, "Game Over. " + world.getGameResult() + ".");
+            showOptionDialog(null, "Game Over. " + world.getGameResult() + ".","Result", JOptionPane.DEFAULT_OPTION,JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
+            restart();
         });
         if (soloMode) {
             aiTankThread = new Thread(() -> {
@@ -121,6 +125,21 @@ public class Window extends JFrame {
         setVisible(true);
         initPregame();
         initMainLogo();
+    }
+
+    public void restart() {
+        bulletThread.interrupt();
+        aiTankThread.interrupt();
+        world.restart();
+        remove(gameUI);
+        pack();
+        initPregame();
+        initMainLogo();
+        soloMode = false;
+        duoMode = false;
+        selectMap = false;
+        selectMode = false;
+        repaint();
     }
 
     public void mapSelected() {
@@ -162,9 +181,6 @@ public class Window extends JFrame {
         private final Image imageBullet;
         private final Image imageLogo;
 
-        private boolean showFirstTank;
-        private boolean showSecondTank;
-
         public GameUI() {
             setPreferredSize(new Dimension(worldSize * CELL_PIXEL_SIZE,
                     worldSize * CELL_PIXEL_SIZE));
@@ -175,8 +191,6 @@ public class Window extends JFrame {
             imageLogo = new ImageIcon("img/logo.png").getImage();
             imageBullet = new ImageIcon("img/bullet.png").getImage();
             imageEnemyTank = new ImageIcon("img/enemyTank.png").getImage();
-            showFirstTank = true;
-            showSecondTank = true;
         }
 
         @Override
@@ -185,24 +199,32 @@ public class Window extends JFrame {
             if (!selectMap) {
                 paintLogo(g);
             }else {
+                Tank firstTank = world.getFirstTank();
                 if(duoMode){
+                    Tank secondTank = world.getSecondTank();
                     paintBush(g);
                     paintBrick(g);
                     paintSteel(g);
                     paintBullet(g);
-                    if (showFirstTank) {
-                        paintFirstTank(g);
+                    if (firstTank != null) {
+                        if (firstTank.isShow()) {
+                            paintFirstTank(g);
+                        }
                     }
-                    if (showSecondTank) {
-                        paintSecondTank(g);
+                    if (secondTank != null) {
+                        if (secondTank.isShow()) {
+                            paintSecondTank(g);
+                        }
                     }
                 } else {
                     paintBush(g);
                     paintBrick(g);
                     paintSteel(g);
                     paintBullet(g);
-                    if (showFirstTank) {
-                        paintFirstTank(g);
+                    if (firstTank != null) {
+                        if (firstTank.isShow()) {
+                            paintFirstTank(g);
+                        }
                     }
                     paintEnemyTank(g);
                 }
@@ -285,13 +307,6 @@ public class Window extends JFrame {
                 System.out.println(e);
             }
         }
-        public void setShowFirstTank(boolean status) {
-            showFirstTank = status;
-        }
-
-        public void setShowSecondTank(boolean status) {
-            showSecondTank = status;
-        }
 
         private BufferedImage convertToBufferedImage(Image image)
         {
@@ -357,7 +372,7 @@ public class Window extends JFrame {
                 // Don't allow starting when press key except direction key
                 return;
             }
-            gameUI.setShowFirstTank(!world.isInBush(
+            world.getFirstTank().setShow(!world.isInBush(
                     world.getFirstTank().getX(),
                     world.getFirstTank().getY()));
             gameUI.repaint();
@@ -389,7 +404,7 @@ public class Window extends JFrame {
                 // Don't allow starting when press key except direction key
                 return;
             }
-            gameUI.setShowSecondTank(!world.isInBush(
+            world.getSecondTank().setShow(!world.isInBush(
                     world.getSecondTank().getX(),
                     world.getSecondTank().getY()));
             gameUI.repaint();
